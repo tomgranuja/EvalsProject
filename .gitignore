@@ -1,0 +1,35 @@
+# Byte-compiled
+__pycache__/
+*.pyc
+
+# Django stuff:
+# local_settings.py
+.local_settings
+*.sqlite3
+*.sqlite3.bak
+
+# Django fixtures
+fixtures/
+
+# IPython Notebook
+.ipynb_checkpoints
+
+# dotenv
+.env
+
+# Kate editor
+*.kate-swp
+.kateproject
+
+# Dolphin file manager
+.directory
+
+# Small devs that don't want to track
+# anywhere in the tree, inside Devs dirs.
+Devs/
+
+# GhostWriter annoying file
+widgets.qss
+
+# LibreOffice lock files
+.~lock.*.od[stp]#
