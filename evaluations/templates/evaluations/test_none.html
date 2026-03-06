@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <title>Test None var</title>
+  </head>
+  
+  <body>
+  
+    {{ none_obj|json_script:"none-obj" }}
+    
+    <script>
+      let noneObj = JSON.parse(document.getElementById('none-obj').textContent);
+      // console.log(noneObj);
+    </script>
+  
+    <h2>None variable value</h2>
+    <p>None var:{{ none_obj.none_var }}</p>
+  
+    <h2>Conditional testing</h2>
+    {% if none_obj.none_var is None %}
+      <p>True: none_var is None</p>
+    {% else %}
+      <p>False: none_var is not None</p>
+    {% endif %}
+  </body>
+</html>

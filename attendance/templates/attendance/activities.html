@@ -1,0 +1,33 @@
+{% extends "evaluations/base.html" %}
+{% load static %}
+
+{% block title %} <title>Actividades anuales</title> {% endblock %}
+{% block head %}
+{{ block.super }}
+  <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block body_header %}
+<nav>
+  <ul>
+    <li><a href={% url 'teachers' %}>Guias</a></li>
+  <!--
+    <li><a href={% url 'today_attendance' %}>Meses</a></li>
+    <li><a href={% url 'today_attendance' %}>Ciclos</a></li>
+  -->
+  </ul>
+</nav>
+{% endblock body_header %}
+
+
+{% block body_main %}
+  
+  <h2 class='top-title'>Actividades anuales 2026 </h2>
+  <ul>
+    {% for activity in activities %}
+      <li><a href={% url 'activity_attendance_cycles' activity.pk %}>{{ activity }}</a></li>
+    {% endfor %}
+  </ul>
+
+{% endblock body_main %}

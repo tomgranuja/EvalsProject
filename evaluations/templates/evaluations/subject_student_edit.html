@@ -1,0 +1,79 @@
+{% extends "evaluations/base.html" %}
+{% load static %}
+
+{% block title %} <title>Editar estudiantes</title> {% endblock %}
+
+{% block head %}
+  {{ block.super }}
+  <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block body_header %}
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id="teacher-dashboard-header-item" class="header-item">
+          <a href={% url 'teacher_dashboard' subject.teacher.pk %}#subject-{{ subject.pk }}-evals>Panel</a>
+        </li>
+        <li id="subject-student-enroll-header-item" class="header-item">
+          <a href={% url 'subject_student_enroll' subject.pk %}>Inscritos</a>
+        </li>
+        {% if user.is_authenticated %}
+          <li id="logout-header-item" class="header-item">
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Salir</a>
+            <form id="logout-form" action="{% url 'logout' %}?next={% url 'login' %}" method="post">
+              {% csrf_token %}
+            </form>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
+{% endblock body_header %}
+
+{% block body_main %}
+
+  <h2>{{ subject.name }}</h2>
+  {% if formset.total_form_count > 0 %}
+    <form method="post">
+      {% csrf_token %}
+      {{ formset.management_form }}
+      <table>
+        <thead>
+          <tr>
+            <th>ESTUDIANTE</th>
+            <th>CICLO</th>
+            <th>ACTIVO</th>
+            <th>INFORME</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for form in formset %}
+            <tr>
+              <td>{{ form.initial.subject_student.student }}</td>
+              <td>{{ form.initial.subject_student.student.cycle }}</td>
+              <td class="h-center">{{ form.active_field }}</td>
+              <td class="h-center">{{ form.informed_field }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <input type="submit" value="Guardar">
+    </form>
+  {% else %}
+    <p>Sin estudiantes inscritos.</p>
+  {% endif %}
+  <p><a href="{% url 'subject_student_enroll' subject.pk %}">Agregar o quitar estudiantes</a></p>
+  <!--<h2>Evaluaciones</h2>
+  <ul>
+    {% for evaluation in evaluations %}
+      <li><a href="{% url 'eval_design_edit' subject.pk evaluation.pk %}">{{ evaluation }}</a></li>
+    {% endfor %}
+  </ul>
+  <p><a href="{% url 'eval_design_new' subject.pk %}">Agregar un nuevo diseño de evaluación</a></p>
+
+  <h2>Resultados de evaluaciones</h2>
+  <a href="{% url 'subject_eval_results' subject.pk %}">Resumen de resultados de evaluación</a>-->
+
+{% endblock body_main %} 
+

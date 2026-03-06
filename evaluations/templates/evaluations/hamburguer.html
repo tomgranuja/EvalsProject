@@ -1,0 +1,121 @@
+{% extends "evaluations/base.html" %}
+{% block title %} <title>Menu Hamburguesa</title> {% endblock %}
+
+{% block head %}
+  {{ block.super }}
+  <style>
+    .subject-nav {
+      max-width: 400px;
+    }
+  
+    .subject-nav-button{
+      cursor: pointer;
+    }
+    
+    .subject-nav-button > rect {
+      transition-duration: 0.3s;
+    }
+    
+    nav.subject-nav-collapsed {
+      display: none;
+    }
+    
+    ul.subject-nav-items {
+      list-style: none;
+      color: #191d33;
+    }
+    
+    ul.subject-nav-items li.nav-subtitle {
+      padding: 0rem 0rem 0.2rem 0rem;
+      border-bottom: 1px solid #191d33;
+      margin: 0rem 0rem 0.6rem 0rem;
+      font-size: 1.5em;
+      font-weight: 300;
+    }
+    
+    ul.subject-nav-items li.nav-item {
+/*       margin: 0 0.6rem; */
+      font-size: 1.5rem;
+    }
+    
+    ul.subject-nav-items li.nav-item a {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      padding: 1.2rem;
+    }
+    
+    ul.subject-nav-items li.nav-item a:hover {
+      background-color: #f6f9fb;
+    }
+    
+  </style>
+{% endblock head %}
+
+{% block body_main %}
+  <div class=subject-nav>
+    <svg class="subject-nav-button" id="subject-01-nav-button" viewBox="0 0 100 90" width="100" height="90" onclick="onNavButtonClick(this);" collapsed="true">
+      <rect class="hamburguer-icon-bar-rect2" x="10" y="37" width="80" height="16" rx="4" style="fill:#AAAAAA"></rect>
+      <rect class="hamburguer-icon-bar-rect1" x="10" y="10" width="80" height="16" rx="4" style="fill:#AAAAAA"></rect>
+      <rect class="hamburguer-icon-bar-rect3" x="10" y="64" width="80" height="16" rx="4" style="fill:#AAAAAA"></rect>
+      
+      
+      <!-- Harder to animate this way
+      <use href="#hamburguer-icon-bar-rect1" x="0" y="26"></use>
+      <use href="#hamburguer-icon-bar-rect1" x="0" y="52"></use>
+      -->
+    </svg>
+    <nav class="subject-nav subject-nav-collapsed" id="subject-01-nav">
+      <ul class="subject-nav-items">
+        <li class="nav-subtitle">Estudiantes</li>
+        <li class="nav-item"><a href="#">Estado</a></li>
+        <li class="nav-item"><a href="#">Inscritos</a></li>
+        <li class="nav-subtitle">Información de la clase</li>
+        <li class="nav-item"><a href="#">Identificación</a></li>
+        <li class="nav-item"><a href="#">Horario</a></li>
+      </ul>
+    
+    </nav>
+  </div>
+  
+  <script>
+    
+    function onNavButtonClick(container){
+      if (container.hasAttribute('collapsed')) {
+        console.log("...should expand the menu.");
+      }
+      else {
+        console.log("...should collapse the menu.");
+      }
+      toggleNavButton(container);
+      toggleNavLinks(container);
+      container.toggleAttribute('collapsed');
+    }
+    
+    function toggleNavButton(container){
+      if (container.hasAttribute('collapsed')) {
+        container.getElementsByClassName("hamburguer-icon-bar-rect1")[0].style.transform = "translate(27.3726px, -3.0833px) rotate(45deg)";
+        container.getElementsByClassName("hamburguer-icon-bar-rect2")[0].style.opacity = "0";
+        container.getElementsByClassName("hamburguer-icon-bar-rect3")[0].style.transform = "translate(-36.267px, 29.4436px) rotate(-45deg)";
+      }
+      else {
+        container.getElementsByClassName("hamburguer-icon-bar-rect1")[0].style.transform = "";
+        container.getElementsByClassName("hamburguer-icon-bar-rect2")[0].style.opacity = "1";
+        container.getElementsByClassName("hamburguer-icon-bar-rect3")[0].style.transform = "";
+      }
+    }
+    
+    function toggleNavLinks(container){
+      const collapsedClass = "subject-nav-collapsed";
+      const navElement = container.parentNode.getElementsByTagName('nav')[0];
+      if (navElement.classList.contains(collapsedClass)) {
+        navElement.classList.remove(collapsedClass);
+      }
+      else {
+        navElement.classList.add(collapsedClass);
+      }
+    }
+    
+  </script>
+  
+{% endblock body_main %}

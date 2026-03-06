@@ -1,0 +1,35 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg">
+
+    <defs>
+
+
+        <symbol id="nav-icon" viewBox="0 0 100 90">
+        </symbol>
+
+
+        <symbol id="table-icon" viewBox="0 0 100 100">
+            <path style="fill:#4baadc;stroke:#1e69a0;stroke-width:4.11595;"
+                d="m 13.32345,8.0000546 c -2.949171,0 -5.323516,2.3743404 -5.323516,5.3235184 V 29.200961 H 92.67934 V 13.323573 c 0,-2.949178 -2.37377,-5.3235184 -5.322954,-5.3235184 z" />
+            <rect
+                style="fill:none;stroke:#1e69a0;stroke-width:4.11595;"
+                width="84.67955"
+                height="84.80336"
+                x="8"
+                y="8"
+                ry="5.3234224" />
+            <path style="stroke:#1e69a0;stroke-width:4.11595;"
+                d="M 7.999995,50.463461 92.67956,50.401691" />
+            <path style="stroke:#1e69a0;stroke-width:4.11595;"
+                d="M 7.999995,71.633239 H 92.67912" />
+            <path style="stroke:#1e69a0;stroke-width:4.11595;"
+                d="M 29.169779,29.293691 V 92.803015" />
+            <path style="stroke:#1e69a0;stroke-width:4.11595;"
+                d="M 50.339553,29.293691 V 92.803015" />
+            <path style="stroke:#1e69a0;stroke-width:4.11595;"
+                d="M 71.509338,29.293691 V 92.803015" />
+        </symbol>
+
+
+    </defs>
+
+</svg>

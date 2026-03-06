@@ -1,0 +1,63 @@
+{% extends "evaluations/base.html" %}
+{% load static %}
+
+{% block title %} <title>Diseno Evaluación</title> {% endblock %}
+{% block head %}
+  {{ block.super }}
+  <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+  <style>
+    label {
+      display: block;
+      font-weight: 300;
+      font-size: 1.5rem;
+    }
+  </style>
+{% endblock head %}
+
+{% block body_header %}
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id="teacher-dashboard-header-item" class="header-item">
+          <a href={% url 'teacher_dashboard' form.initial.subject.teacher.pk %}#subject-{{ form.initial.subject.pk }}-evals>Panel</a>
+        </li>
+        {% if form.instance.pk %}
+          <li id="eval-results-header-item" class="header-item">
+            <a href="{% url 'eval_results' form.initial.subject.pk form.instance.pk %}">Resultados</a>
+          </li>
+        {% endif %}
+        {% if user.is_authenticated %}
+          <li id="logout-header-item" class="header-item">
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Salir</a>
+            <form id="logout-form" action="{% url 'logout' %}?next={% url 'login' %}" method="post">
+              {% csrf_token %}
+            </form>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
+{% endblock body_header %}
+
+{% block body_main %}
+  <form method="post">
+    <h2 class="display-4 top-title">
+      {% if form.instance.pk %}
+        Editar evaluación
+      {% else %}
+        Nueva evaluación
+      {% endif%}
+      <small class='text-secondary'>{{ form.initial.subject }}</small>
+    </h2>
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Crear">
+  </form>
+    {% if form.instance.pk %}
+      <p>
+        <a href="{% url 'eval_results' form.initial.subject.pk form.instance.pk %}">Ir a resultados</a>
+      </p>
+    {% endif %}
+
+{% endblock body_main %}
+

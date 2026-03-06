@@ -1,0 +1,380 @@
+{% extends "evaluations/base.html" %}
+{% load static %}
+
+{% block title %} <title>Panel Guía</title> {% endblock %}
+{% block head %}
+  {{ block.super }}
+  <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+  <style>
+
+/* ===== All subjects buttons ===== */
+   
+   #all-subjects-container {
+/*     Some style to visually separate all subjects button from following subjects sections */
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    .all-subjects-flex {
+      display: flex;
+      flex-flow: row wrap;
+      gap: 15px;
+      /*Flex items align left*/
+      justify-content: flex-start;
+    }
+    
+    @media all and (max-width:800px) {
+      .all-subjects-flex {
+        /*Flex items are spaced laying out centered*/
+        justify-content: space-around;
+      }
+    }
+    
+    @media all and (max-width: 500px){
+      .all-subjects-flex {
+        /*Flex items stay in one column*/
+        flex-direction: column;
+      }
+    }
+    
+    .subject-card {
+      background-color: var(--color-white);
+      border-radius: 4px;
+      box-shadow: 0 0 7px rgba(0,0,0,0.2);
+      position: relative;
+      
+    }
+    
+    .subject-card:hover {
+      background-color: var(--color-gray-200);
+    }
+    
+    .subject-card-content {
+      padding: 1.5rem;
+    }
+    
+    .subject-card-content h4.subject-name {
+      margin-top: 5px;
+      margin-bottom: 0px;
+    }
+    
+    .subject-card a.card-link {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+    }
+
+/* ===== Subject titles ===== */
+
+    h3.subject-title {
+      margin-bottom: 0.2rem;
+    }    
+
+    
+/* ===== Subject nav links ===== */
+
+    .subject-nav {
+      max-width: 400px;
+    }
+  
+    .subject-nav-button{
+      cursor: pointer;
+    }
+    
+    .subject-nav-button > rect {
+      transition-duration: 0.3s;
+    }
+    
+    nav.subject-nav {
+      background-color: var(--color-white);
+    }
+    
+    nav.subject-nav-collapsed {
+      display: none;
+    }
+    
+    ul.subject-nav-items {
+      list-style: none;
+      padding-left: 0px;
+    }
+    
+    ul.subject-nav-items li.nav-subtitle {
+      padding: 0rem 0rem 0.2rem 0rem;
+      border-bottom: 1px solid #191d33;
+      margin: 0rem 0rem 0.6rem 0rem;
+      font-size: 1.2em;
+      font-weight: 700;
+    }
+    
+    ul.subject-nav-items li.nav-item {
+      font-size: 1.2rem;
+    }
+    
+    ul.subject-nav-items li.nav-item a {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      padding: 1.2rem;
+    }
+    
+    ul.subject-nav-items li.nav-item a:hover {
+      background-color: var(--color-gray-200);
+    }
+
+
+
+
+
+/* ===== Eval designs grid ===== */
+
+    #eval-designs-container {
+/*    Some styles to visually separate subject eval designs and results */
+    }
+    
+    .designs-result-grid {
+      display: inline-grid;
+      grid-template-columns: 1fr max-content;
+    }
+    
+    h4.grid-col-title {
+      font-size: 1.2rem;
+      margin-bottom: 0.3rem;
+      margin-left: 0.6rem;
+    }
+    
+    #eval-designs-container .subject-card {
+    }
+    
+    #eval-designs-container .subject-card-content {
+      padding-left: 1.0rem;
+    }
+    
+    #eval-designs-container .subject-card-content:not(:last-child) {
+    }
+
+    #eval-designs-container p.evaluation-name{
+      margin: 0;
+      padding-bottom: 0.3rem;
+    }
+    
+    #eval-designs-container .subject-card a.eval-design-link {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+    }
+    
+    .cell-span-2 {
+      grid-column: span 2;
+    }
+        
+    .btn-cell {
+      padding: 1rem;
+    }
+    
+    .btn {
+      display: inline-block;
+      background-color: var(--color-blue);
+      padding: 0.5rem 1.3rem;
+      border-radius: 0.375rem;
+      text-decoration: none;
+      color: inherit;
+      font-size: 1.6rem;
+    }
+    
+    .btn-green {
+      background-color: var(--color-green);
+      color: var(--color-white);
+    }
+
+   
+  </style>
+{% endblock head %}
+
+{% block body_header %}
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id="all-teachers-header-item" class="header-item">
+          <a href="{% url 'teachers' %}">Guias</a>
+        </li>
+        {% if user.is_authenticated %}
+          <li id="logout-header-item" class="header-item">
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Salir</a>
+
+            <form id="logout-form" action="{% url 'logout' %}?next={% url 'login' %}" method="post">
+              {% csrf_token %}
+            </form>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
+{% endblock body_header %}
+
+{% block body_main %}
+  <h2 class='display-4 top-title'>Evaluaciones <small class='text-secondary'>{{ teacher.name }}</small></h2>
+  
+  
+<!--===== All subjects buttons   =====-->
+  <div id='all-subjects-container'>
+    <h3 class='display-5'>Todas las clases ({{ subjects | length }})</h3>
+    
+    <div class='all-subjects-flex'>
+    
+    
+      {% for subject in subjects %}
+        <div class='subject-card'>
+          
+          <div class='subject-card-content'>
+            <h4 class='subject-name'>{{ subject.name }}</h4>
+            <small class='text-secondary'>{{ subject.students.all | length }} estudiantes</small>
+          </div>
+          
+          <a class='card-link' href="#subject-{{ subject.pk }}-evals"></a>
+          
+        </div>
+      {% endfor %}
+      
+      
+    </div>
+
+  </div>
+  
+  
+  
+  
+<!--===== Each Subject evaluations  =====-->  
+  <div id='eval-designs-container'>
+  
+    {% for subject, subject_evaluations in evaluations.items %}
+      
+      <h3 class='display-5 subject-title' id="subject-{{ subject.pk }}-evals">{{ subject.name }} <small class='text-secondary'>({{ subject.students.all | length }} estudiantes)</small></h3>
+      
+      
+<!-- Subject related navigation button and hidden links       -->
+      <div class=subject-nav>
+        
+        <svg class="subject-nav-button" id="subject-{{ subject.pk }}-nav-button" viewBox="0 0 100 90" width="50" height="45" onclick="onNavButtonClick(this);" collapsed="true">
+          <rect class="nav-icon-bar-rect2" x="10" y="37" width="80" height="16" rx="4" style="fill:#ccc"></rect>
+          <rect class="nav-icon-bar-rect1" x="10" y="10" width="80" height="16" rx="4" style="fill:#ccc"></rect>
+          <rect class="nav-icon-bar-rect3" x="10" y="64" width="80" height="16" rx="4" style="fill:#ccc"></rect>
+        </svg>
+        
+        <nav class="subject-nav subject-nav-collapsed" id="subject-{{ subject.pk }}-nav">
+          <ul class="subject-nav-items">
+            <li class="nav-subtitle">Estudiantes</li>
+            <li class="nav-item"><a href="{% url 'subject_student_edit' subject.pk %}">Estado</a></li>
+            <li class="nav-item"><a href="{% url 'subject_student_enroll' subject.pk %}">Inscritos</a></li>
+            <li class="nav-subtitle">Información de la clase</li>
+            <li class="nav-item"><a href="#">Identificación</a></li>
+            <li class="nav-item"><a href="#">Horario</a></li>
+          </ul>
+        </nav>
+        
+      </div>
+      
+      
+<!-- Evaluation designs and results       -->
+      <div class='designs-result-grid'>
+        <div style="align-self: end"><h4 class="grid-col-title">Evaluaciones</h4></div>
+        <div>
+          <h4 class="grid-col-title">
+            Resultados
+            <a href="{% url 'subject_eval_results' subject.pk %}">
+            <svg width="50" height="50">
+              <use href="{% static 'evaluations/media/icons.svg' %}#table-icon"></use>
+            </svg>
+            </a>
+          </h4>
+        </div>
+        {% for evaluation in subject_evaluations %}
+          <div class="subject-card">
+            <div class="subject-card-content">
+              <p class="evaluation-name"><span>&rarr;</span> {{ evaluation }}</p>
+              <small class='text-secondary student-count'>{{ evaluation.subject_students.count }} estudiantes</small>
+            </div>
+            <a class='eval-design-link' href="{% url 'eval_design_edit' subject.pk evaluation.pk  %}"></a>
+          </div>
+              
+            
+          <div class="subject-card">
+            <div class="subject-card-content">
+              <svg width="30" height="30">
+                <use href="{% static 'evaluations/media/icons.svg' %}#table-icon"></use>
+              </svg>
+            </div>
+            <a class="card-link" href="{% url 'eval_results' subject.pk evaluation.pk %}"></a>
+          </div>
+        {% endfor %}
+        <div class="cell-span-2 btn-cell">
+          <a class='btn btn-green btn-list-add' href="{% url 'eval_design_new' subject.pk %}"><strong>+</strong></a>
+        </div>
+      </div>
+    {% endfor %}
+  
+  </div>
+  
+  
+  
+  
+  
+  
+  
+  
+  <div id='recent-posts-container'>
+  </div>
+  
+  <div id='students-container'>
+  </div>
+{% endblock body_main %}
+
+
+
+{% block javascript_locals %}
+<script>
+  function onNavButtonClick(container){
+    if (container.hasAttribute('collapsed')) {
+      console.log("...should expand the menu.");
+    }
+    else {
+      console.log("...should collapse the menu.");
+    }
+    toggleNavButton(container);
+    toggleNavLinks(container);
+    container.toggleAttribute('collapsed');
+  }
+
+  function toggleNavButton(container){
+    if (container.hasAttribute('collapsed')) {
+      container.getElementsByClassName("nav-icon-bar-rect1")[0].style.transform = "translate(27.3726px, -3.0833px) rotate(45deg)";
+      container.getElementsByClassName("nav-icon-bar-rect2")[0].style.opacity = "0";
+      container.getElementsByClassName("nav-icon-bar-rect3")[0].style.transform = "translate(-36.267px, 29.4436px) rotate(-45deg)";
+    }
+    else {
+      container.getElementsByClassName("nav-icon-bar-rect1")[0].style.transform = "";
+      container.getElementsByClassName("nav-icon-bar-rect2")[0].style.opacity = "1";
+      container.getElementsByClassName("nav-icon-bar-rect3")[0].style.transform = "";
+    }
+  }
+
+  function toggleNavLinks(container){
+    const collapsedClass = "subject-nav-collapsed";
+    const navElement = container.parentNode.getElementsByTagName('nav')[0];
+    if (navElement.classList.contains(collapsedClass)) {
+      navElement.classList.remove(collapsedClass);
+    }
+    else {
+      navElement.classList.add(collapsedClass);
+    }
+  }
+</script>
+{% endblock javascript_locals %}

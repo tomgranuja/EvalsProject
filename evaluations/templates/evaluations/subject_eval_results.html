@@ -1,0 +1,177 @@
+{% extends "evaluations/base.html" %}
+{% load static %}
+
+{% block title %} <title>Resultados</title> {% endblock %}
+{% block head %}
+  {{ block.super }}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/styles/handsontable.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/styles/ht-theme-main.min.css" />
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js" ></script>
+  <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+
+{% endblock head %}
+
+{% block body_header %}
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id="teacher-dashboard-header-item" class="header-item">
+          <a href={% url 'teacher_dashboard' subject.teacher.pk %}#subject-{{ subject.pk }}-evals>Panel</a>
+        </li>
+        <li id="eval-design-new-header-item" class="header-item">
+          <a href={% url 'eval_design_new' subject.pk %}>N. Diseño</a>
+        </li>
+        {% if user.is_authenticated %}
+          <li id="logout-header-item" class="header-item">
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Salir</a>
+            <form id="logout-form" action="{% url 'logout' %}?next={% url 'login' %}" method="post">
+              {% csrf_token %}
+            </form>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
+{% endblock body_header %}
+
+
+{% block body_main %}
+  <a href={% url 'teacher_dashboard' subject.teacher.pk %}#subject-{{ subject.pk }}-evals>Volver al panel</a>
+  <h2>{{ subject.name }}</h2>
+  <div class="controls-container">
+    <button id="save" class="control-item button">Guardar</button>
+    <output class="control-item console" id="output">(sin cambios)</output>
+  </div>
+  
+  <div id="result-table"></div>
+  
+{% endblock body_main %}
+
+{% block javascript_locals %}
+  
+  {{ table_info|json_script:"table-info" }}
+  
+  <script>
+    
+    // table.initial Handsontable initial data
+    // table.fetch_url server url for POST fetch.
+    // table.hot: Handsontable
+    const table = init_table(JSON.parse(document.getElementById('table-info').textContent),
+                            document.getElementById('result-table'))
+    hook_for_changes(table.hot);
+    
+    // Save button click handler:
+    //      Make fetch call with POST data
+    //      Parse json response
+    //      Update table, hook for changes
+    document.getElementById('save').addEventListener('click', () => {
+      fetch_table(table)
+        .then((response) => parse_json_response(response))
+        .then((body_obj) => {
+          if (body_message_ok(body_obj.message)){
+            output_msg_update("Datos en registro.");
+            table_update(table, body_obj.data);
+            console.log('Table updated with database values.');
+            hook_for_changes(table.hot);
+          } else {
+            // Call the same function used for rejected POST fetch/parse.
+            on_POST_reject('response message was not "Data saved".');
+            output_msg_update('No se recibió confirmación de registro en servidor.');
+          }
+        })
+        .catch((err) => on_POST_reject(err))
+    });
+
+    function init_table(table_info, container){
+      const settings = {
+        // theme name with obligatory ht-theme-* prefix
+        themeName: 'ht-theme-main-dark-auto',
+        // other options
+        data: deep_copy(table_info.data),
+        rowHeaders: true,
+        colHeaders: table_info.table_headers,
+        // Hide 'id' column
+        hiddenColumns: { columns: [0] },
+        height: 'auto',
+        autoWrapRow: true,
+        autoWrapCol: true,
+        licenseKey: 'non-commercial-and-evaluation', // for non-commercial use only
+        columns: table_info.column_settings,
+      };
+      return {
+        initial: table_info.data,
+        fetch_url: table_info.fetch_url,
+        hot: new Handsontable(container, settings)
+      };
+    }
+
+    function deep_copy(obj){
+      return structuredClone(obj);
+    }
+
+    function getToken(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie != '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0,name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    function fetch_table(table){
+      console.log('Fetching the post request.');
+      const config = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getToken('csrftoken'),
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({'initial': table.initial, 'data': table.hot.getData()})
+      };
+      return fetch(table.fetch_url, config);
+    }
+
+    function parse_json_response(response) {
+      console.log('Response recived, parsing from json...');
+      return response.json();
+    }
+
+    function body_message_ok(msg){
+      return msg === "Data saved";
+    }
+
+    function output_msg_update(msg){
+      document.getElementById('output').innerText = msg;
+    }
+
+    function table_update(table, data) {
+      // make a copy of data to use as initial table data
+      table.initial = deep_copy(data);
+      table.hot.updateData(data);
+      table.hot.validateCells();
+    }
+
+    function hook_for_changes(hot){
+      hot.addHookOnce('afterChange', (changes) => {
+        console.log('onAfterChangeOnce triggered.');
+        output_msg_update('Click "Guardar" para guardar cambios.');
+      });
+      // The following workaround is not needed because it was fixed in
+      // handsontable version 16.2.0
+      //
+      // hot.pluginHookBucket.getHooks('afterChange')[0].skip=false;
+    }
+
+    function on_POST_reject(err) {
+      console.log(`POST failed: ${err}`);
+    }
+  </script>
+{% endblock javascript_locals %}

@@ -1,0 +1,172 @@
+/* ===== Base Styles ===== */
+    
+:root {
+  --color-white:#fff;
+  --color-gray-100:#f7f7f9;
+  --color-gray-200:#efeff3;
+  --color-gray-300:#e0e0e3;
+  --color-gray-550:#676778;
+  --color-black:#000;
+  --color-dark-blue:#191d33;
+  --color-light-blue:#f6f9fb;
+  --color-gray-blue:#a1a4b5;
+  --color-blue:#1a42e8;
+  --color-green:#37b659;
+}
+
+body {
+  background-color: var(--color-light-blue);
+  color: var(--color-dark-blue);
+}
+
+h1, h2, h3, .display-1, .display-2, .display-3, .display-4, .display-5, .display-6 {
+  font-weight: 300;
+}
+
+.top-title {
+  margin-top: 0px;
+}
+
+.display-1 {
+  font-size: 6rem;
+}
+
+.display-2 {
+  font-size: 5.5rem;
+}
+
+  .display-3 {
+  font-size: 4.5rem;
+}
+
+.display-4 {
+  font-size: 3.5rem;
+}
+
+.display-5 {
+  font-size: 2.5rem;
+}
+
+.display-6 {
+  font-size: 1.5rem;
+}
+
+.text-secondary {
+  color: var(--color-gray-blue);
+}
+
+/* ===== Forms and form tables ===== */
+form {
+  max-width: 600px;
+}
+
+form tr:hover {
+  background-color: var(--color-gray-200);
+}
+
+form th {
+  padding: 0.3rem;
+}
+
+form td {
+  padding:0.9rem 0.6rem;
+}
+
+form td.h-center {
+  text-align: center;
+}
+
+input, textarea, select {
+  width: 100%;
+  margin: 5px 0px 15px 0px;
+  border: 1px solid var(--color-gray-blue);
+  border-radius: 4px;
+  padding: 14px;
+}
+
+select {
+  padding: 0;
+}
+
+input[type=checkbox] {
+  width: auto;
+  margin: 0.3em 0.8em;
+}
+
+input[type=submit] {
+  background-color: var(--color-green);
+  color: var(--color-white);
+  margin: 15px 0px;
+}
+
+/* ===== Header nav ===== */
+#header-flex {
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-gray-200);
+}
+
+.header-item {
+  text-align: center;
+  flex: 1;
+  color: var(--color-gray-550);
+}
+
+.header-item:hover, .header-item a:hover .header-item:focus .header-item a:focus {
+  color: ;
+  background-color: var(--color-gray-300);
+}
+
+.header-item a {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: 0.7em 0.3em 0.5em;
+}
+
+
+/* ===== Handson table theme and controls ===== */
+.ht-theme-main-dark-auto {
+  --ht-background-color: var(--color-light-blue);
+  --ht-foreground-color: var(--color-dark-blue);
+  --ht-common-border: var(--color-gray-300);
+}
+
+.controls-container {
+  display: flex;
+  gap: 8px;
+  padding: 0 0 16px;
+}
+  
+@media (max-width: 600px) {
+  .controls-container {
+    flex-direction: column;
+  }
+}
+    
+.control-item {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--color-gray-300);
+}
+
+.control-item.button  {
+  cursor: pointer;
+  border-radius: 8px;
+  background: var(--color-gray-100);
+  color: var(--color-black);
+}
+
+.control-item.button:hover  {
+  background: var(--color-gray-200);
+  border: 1px solid var(--color-blue);
+}
+
+.control-item.console {
+  background: var(--color-gray-100);
+  color: var(--color-gray-550);
+  white-space: pre-line;
+}

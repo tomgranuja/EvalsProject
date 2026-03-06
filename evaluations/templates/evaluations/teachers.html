@@ -1,0 +1,73 @@
+{% extends "evaluations/base.html" %}
+{% load static %}
+
+{% block title %} <title>Guías</title> {% endblock %}
+{% block head %}
+  {{ block.super }}
+  <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+  <style>
+
+/* ===== Teacher links style ===== */
+    #teachers-flex {
+      display: flex;
+      flex-flow: column wrap;
+      max-height: 400px;
+      align-content: flex-start;
+/*       max-width: 700px; */
+    }
+
+    .teacher-flex-item {
+      margin: 0.2em 0.5em;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      padding: 0.8em;
+      border-left: 5px solid var(--color-gray-blue);
+      display: block;
+    }
+
+    a:hover {
+      background-color: var(--color-gray-200);
+    }
+
+    a:active {
+      color: red;
+    }
+
+  </style>
+
+{% endblock head %}
+
+{% block body_header %}
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id="asistencia-header-item" class="header-item">
+          <a href="{% url 'today_attendance' %}">Asistencia</a>
+        </li>
+        {% if user.is_authenticated %}
+          <li id="logout-header-item" class="header-item">
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Salir</a>
+
+            <form id="logout-form" action="{% url 'logout' %}?next={% url 'login' %}" method="post">
+              {% csrf_token %}
+            </form>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
+{% endblock body_header %}
+
+{% block body_main %}
+  <h2>Guias</h2>
+  <div id="teachers-flex">
+    {% for teacher in teachers %}
+      <div class="teacher-flex-item">
+        <a href="{% url 'teacher_dashboard' teacher.pk %}">{{ teacher.name }}</a>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock body_main %}

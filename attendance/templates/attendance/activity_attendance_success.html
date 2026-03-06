@@ -1,0 +1,39 @@
+{% extends "evaluations/base.html" %}
+{% load static %}
+
+{% block title %} <title>Registrado</title> {% endblock %}
+{% block head %}
+{{ block.super }}
+  <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block body_header %}
+<nav>
+  <ul>
+  <!--
+    <li><a href={% url 'today_attendance' %}>Meses</a></li>
+    <li><a href={% url 'today_attendance' %}>Ciclos</a></li>
+  -->
+  </ul>
+</nav>
+{% endblock body_header %}
+
+
+{% block body_main %}
+  
+  <h2 class='top-title'>Registrado</h2>
+  <p class='text-secondary'>
+    {{ activity }}
+    {% for cycle in cycles %}
+      {{ cycle.name }}
+    {% endfor %}
+  </p>
+  <ul>
+    {% for attendance in attendances %}
+      <li>{{ attendance.student.cycle }} {{ attendance.student  }} ---> {{ attendance.is_present_long_display }}</li>
+    {% endfor %}
+  </ul>
+  <p><a href={% url 'activity_attendance_cycles' activity.pk %}>Volver</a></p>
+
+{% endblock body_main %}

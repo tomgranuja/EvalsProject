@@ -1,0 +1,65 @@
+{% extends "evaluations/base.html" %}
+{% load static %}
+
+{% block title %} <title>Inscribir estudiantes</title> {% endblock %}
+
+{% block head %}
+  {{ block.super }}
+  <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block body_header %}
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id="teacher-dashboard-header-item" class="header-item">
+          <a href={% url 'teacher_dashboard' subject.teacher.pk %}#subject-{{ subject.pk }}-evals>Panel</a>
+        </li>
+        <li id="subject-student-edit-header-item" class="header-item">
+          <a href={% url 'subject_student_edit' subject.pk %}>Activos</a>
+        </li>
+        {% if user.is_authenticated %}
+          <li id="logout-header-item" class="header-item">
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Salir</a>
+            <form id="logout-form" action="{% url 'logout' %}?next={% url 'login' %}" method="post">
+              {% csrf_token %}
+            </form>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
+{% endblock body_header %}
+
+{% block body_main %}
+  <h2>{{ subject.name }}</h2>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <table>
+      <thead>
+        <tr>
+          <th>INSCRIBIR</th>
+          <th>CICLO</th>
+          <th>CURSO</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for form in formset %}
+          <tr>
+            <td>
+              {{ form.enroll_field }}
+              <label for="{{ form.enroll_field.id_for_label }}">{{ form.initial.student }}</label>
+            </td>
+            <td>{{ form.initial.student.cycle }}</td>
+            <td>{{ form.initial.student.grade_display }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <input type="submit" value="Guardar">
+  </form>
+  
+{% endblock body_main %}
+

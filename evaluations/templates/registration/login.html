@@ -1,0 +1,76 @@
+{% extends "evaluations/base.html" %}
+{% load static%}
+
+{% block title %}<title>Login</title>{% endblock %}
+
+{% block head %}
+  {{ block.super }}
+  <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+  <style>
+    p.alert-msg {
+      color: red;
+      font-size: 1em;
+    }
+
+    p.form-error {
+      margin: 0;
+    }
+
+    #login-form {
+      padding:0.2em;
+    }
+
+    #user-pass-flex {
+      display: flex;
+      gap: 0.5em;
+    }
+
+    @media all and (max-width: 500px){
+      #user-pass-flex {
+        flex-direction: column;
+        gap: 0;
+      }
+    }
+
+    #login-form label {
+      font-size: 1.2em;
+      color: var(--color-gray-blue);
+    }
+
+    #login-form input {
+      font-size: 1.2em;
+    }
+
+  </style>
+{% endblock head%}
+
+{% block body_main %}
+
+  {% if next %}
+    {% if user.is_authenticated %}
+      <p class="alert-msg">Tu cuenta no tiene acceso a esta página. Para conseguirlo regístrate con una cuenta que si tenga acceso.</p>
+    {% endif %}
+  {% endif %}
+
+  <form id="login-form" method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <h2 class="display-4 top-title">Acceso</h2>
+    <div id="user-pass-flex">
+      <div class="form-controls">
+        {{ form.username.label_tag }}
+        {{ form.username }}
+      </div>
+      <div class="form-controls">
+        {{ form.password.label_tag }}
+        {{ form.password }}
+      </div>
+    </div>
+  {% if form.errors %}
+    <p class="alert-msg form-error">Tu nombre de usuario y password no concuerdan. Por favor, intenta de nuevo.</p>
+  {% endif %}
+
+    <input type="submit" value="Acceder">
+    <input type="hidden" name="next" value="{{ next }}">
+  </form>
+
+{% endblock body_main %}

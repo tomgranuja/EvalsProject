@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    
+    {% block title %}
+      <title>Evaluaciones</title>
+    {% endblock title %}
+    
+    {% block head %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href=" https://cdn.jsdelivr.net/npm/modern-normalize@3.0.1/modern-normalize.min.css " rel="stylesheet">
+    {% endblock head %}
+    
+  </head>
+  
+  <body>
+    {% block body_header %}{% endblock body_header%}
+
+    {% block body_aside %}{% endblock body_aside%}
+
+    {% block body_main %}{% endblock body_main%}
+    
+    {% block body_foot %}{% endblock body_foot %}
+    
+    {% block javascripts %}
+      {% block javascript_locals %}{% endblock javascript_locals %}
+    {% endblock javascripts %}
+  </body>
+</html>
