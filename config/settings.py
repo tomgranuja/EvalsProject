@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 
 def parse_local_settings(data_str):
-    parsed = dict([s.split('=', maxsplit=2) 
+    parsed = dict([s.split('=', maxsplit=2)
                  for s in data_str.splitlines()
                  if '=' in s])
     return dict([(k.strip(), v.strip()) for k,v in parsed.items()])
@@ -22,7 +22,7 @@ def parse_local_settings(data_str):
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Read local file config variables (keep this file secret with chmod 600)
-LOCAL_SETTINGS_FNAME = BASE_DIR / 'eleccion/.local_settings'
+LOCAL_SETTINGS_FNAME = BASE_DIR / 'config/.local_settings'
 LOCAL_SETTINGS = {}
 if Path(LOCAL_SETTINGS_FNAME).is_file():
     with Path(LOCAL_SETTINGS_FNAME).open() as f:
@@ -39,8 +39,7 @@ if 'SECRET_KEY' in LOCAL_SETTINGS:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 if 'DEBUG' in LOCAL_SETTINGS:
-    if LOCAL_SETTINGS['DEBUG'] == 'False':
-        DEBUG = False
+    DEBUG = LOCAL_SETTINGS['DEBUG'].lower() == 'true'
 
 ALLOWED_HOSTS = []
 if 'ALLOWED_HOSTS' in LOCAL_SETTINGS:
@@ -138,7 +137,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+#STATIC_ROOT = BASE_DIR / 'static'
+if 'STATIC_ROOT' in LOCAL_SETTINGS:
+    STATIC_ROOT = BASE_DIR / LOCAL_SETTINGS['STATIC_ROOT']
+
+STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
