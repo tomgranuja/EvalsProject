@@ -35,7 +35,7 @@ h1, h2, h3, .display-1, .display-2, .display-3, .display-4, .display-5, .display
   font-size: 5.5rem;
 }
 
-  .display-3 {
+.display-3 {
   font-size: 4.5rem;
 }
 
@@ -127,6 +127,33 @@ input[type=submit] {
   padding: 0.7em 0.3em 0.5em;
 }
 
+/* ===== Short vertical links flex ===== */
+.vertical-links-flex {
+  display: flex;
+  flex-flow: column wrap;
+  max-height: 400px;
+  align-content: flex-start;
+}
+
+.vertical-link-flex-item {
+  margin: 0.2em 0.5em;
+}
+
+.vertical-link-flex-item a {
+  text-decoration: none;
+  color: inherit;
+  padding: 0.8em;
+  border-left: 5px solid var(--color-gray-blue);
+  display: block;
+}
+
+.vertical-link-flex-item a:hover {
+  background-color: var(--color-gray-200);
+}
+
+.vertical-link-flex-item a:active {
+  color: red;
+}
 
 /* ===== Handson table theme and controls ===== */
 .ht-theme-main-dark-auto {

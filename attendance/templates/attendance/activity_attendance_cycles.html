@@ -25,11 +25,15 @@
   
   <h2 class='top-title'>Elegir ciclo para registrar</h2>
   <p class='text-secondary'><span class='text-secondary'>{{ activity }} </span><a href={% url 'activities' %}>Otras actividades</a></p>
-  <ul>
+  <div class="vertical-links-flex">
     {% for cycle in cycles %}
-      <li><a href={% url 'activity_attendance_single_cycle' activity.pk  cycle.pk %}>{{ cycle }}</a></li>
+      <div class="vertical-link-flex-item">
+        <a href={% url 'activity_attendance_single_cycle' activity.pk  cycle.pk %}>{{ cycle }}</a>
+      </div>
     {% endfor %}
-      <li><a href={% url 'activity_attendance_all_cycles' activity.pk %}>Todos</a></li>
-  </ul>
+      <div class="vertical-link-flex-item">
+        <a href={% url 'activity_attendance_all_cycles' activity.pk %}>Todos</a>
+      </div>
+  </div>
 
 {% endblock body_main %}
