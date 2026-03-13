@@ -63,17 +63,6 @@
   {% else %}
     <p>Sin estudiantes inscritos.</p>
   {% endif %}
-  <p><a href="{% url 'subject_student_enroll' subject.pk %}">Agregar o quitar estudiantes</a></p>
-  <!--<h2>Evaluaciones</h2>
-  <ul>
-    {% for evaluation in evaluations %}
-      <li><a href="{% url 'eval_design_edit' subject.pk evaluation.pk %}">{{ evaluation }}</a></li>
-    {% endfor %}
-  </ul>
-  <p><a href="{% url 'eval_design_new' subject.pk %}">Agregar un nuevo diseño de evaluación</a></p>
-
-  <h2>Resultados de evaluaciones</h2>
-  <a href="{% url 'subject_eval_results' subject.pk %}">Resumen de resultados de evaluación</a>-->
 
 {% endblock body_main %} 
 

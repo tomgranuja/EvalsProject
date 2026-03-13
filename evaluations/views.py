@@ -182,14 +182,14 @@ def eval_design_new(request, subject_pk):
         form = EvalDesignForm(request.POST, initial=initial, instance=eval_design)
         if form.is_valid():
             eval_design = form.save()
-            teacher_pk = eval_design.subject.teacher.pk
-            return HttpResponseRedirect(reverse(teacher_dashboard, args=[teacher_pk]))
+            url_anchor = _back_to_subject_on_dashboard_anchor(eval_design)
+            return HttpResponseRedirect(url_anchor)
     else:
         form = EvalDesignForm(initial=initial, instance=eval_design)
     return render(request,
                   'evaluations/eval_design.html',
                   {'form': form})
-    
+
 @user_passes_test(is_teacher_or_staff)
 @login_required
 def eval_design_edit(request, subject_pk, eval_design_pk):
@@ -201,12 +201,21 @@ def eval_design_edit(request, subject_pk, eval_design_pk):
         form = EvalDesignForm(request.POST, initial=initial, instance=eval_design)
         if form.is_valid():
             eval_design = form.save()
-            return HttpResponseRedirect(reverse(subject_student_edit, args=[subject_pk]))
+            url_anchor = _back_to_subject_on_dashboard_anchor(eval_design)
+            return HttpResponseRedirect(url_anchor)
     else:
         form = EvalDesignForm(initial=initial, instance=eval_design)
     return render(request,
                   'evaluations/eval_design.html',
                   {'form': form,})
+
+def _back_to_subject_on_dashboard_anchor(eval_design):
+    'Teacher dashboard url with subject id html anchor.'
+
+    subject = eval_design.subject
+    teacher = subject.teacher
+    url = reverse(teacher_dashboard, args=[teacher.pk])
+    return f'{url}#subject-{subject.pk}-evals'
 
 @user_passes_test(is_teacher_or_staff)
 @login_required
