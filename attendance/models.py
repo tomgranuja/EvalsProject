@@ -6,7 +6,7 @@ from evaluations.models import Student
 
 # Create your models here.
 def _null_or_blank(obj):
-    return (obj is None) or (obj is '')
+    return (obj is None) or (obj == '')
 
 class SchoolActivity(models.Model):
     '''An attendance registrable school activity.'''

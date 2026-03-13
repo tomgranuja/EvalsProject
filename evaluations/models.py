@@ -90,7 +90,6 @@ class Subject(models.Model):
     teacher = models.ForeignKey(
         Teacher,
         on_delete=models.CASCADE,)
-        # limit_choices_to={'groups__name': "teacher"})
     informed = models.BooleanField(default=True)
     
     def __str__(self):
