@@ -1,12 +1,17 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import F, Q
+from django.utils import timezone
 
-from evaluations.models import Student
+from evaluations.models import Cycle, Student
 
 # Create your models here.
 def _null_or_blank(obj):
     return (obj is None) or (obj == '')
+
+class ActivityManager(models.Manager):
+    def started(self):
+        return self.filter(start__lt=timezone.now())
 
 class SchoolActivity(models.Model):
     '''An attendance registrable school activity.'''
@@ -24,6 +29,8 @@ class SchoolActivity(models.Model):
         through="Attendance"
         )
 
+    objects = ActivityManager()
+
     class Meta:
         constraints = [
             models.CheckConstraint(
@@ -32,8 +39,27 @@ class SchoolActivity(models.Model):
                 )
             ]
 
+    def has_started(self):
+        return self.start < timezone.now()
+
+    def has_none_present_attendance(self, cycle=None):
+        if cycle == None:
+            cycles = Cycle.objects.all()
+        else:
+            cycles = [cycle]
+        attendance = self.attendance_set
+        return any([
+            not attendance.cycle_present(cycle).exists()
+            for cycle in cycles
+        ])
+
     def __str__(self):
         return self.start.strftime('%b-%d ') + self.get_activity_type_display()
+
+class AttendanceManager(models.Manager):
+    def cycle_present(self, cycle):
+        return self.filter(student__cycle=cycle, present=True)
+
 
 class Attendance(models.Model):
     'SchoolActivity-Student attendance through table'
@@ -50,6 +76,8 @@ class Attendance(models.Model):
                 name="unique_activity_student"
             )
         ]
+
+    objects = AttendanceManager()
 
     # For form level validation
     def clean(self):

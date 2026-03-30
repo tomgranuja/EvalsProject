@@ -1,5 +1,7 @@
 {% extends "evaluations/base.html" %}
 {% load static %}
+{% load i18n %}
+{% load attendance_extras %}
 
 {% block title %} <title>Sin Actividad</title> {% endblock %}
 {% block head %}
@@ -24,8 +26,9 @@
 {% block body_main %}
   
   <h2 class='top-title'>Sin actividades para hoy</h2>
-  <p class='text-secondary'>{% now 'M d, Y'%}</p>
-
-  <p><a href={% url 'activities' %}>Actividades anuales</a></p>
+  {% language 'es' %}
+    <p class='text-secondary'>{{ now_datetime |date:"l j \d\e F \d\e Y" |capfirst }}</p>
+  {% endlanguage %}
+  <p><a href="{% url 'activities' %}#{{ now_datetime |year_month_id }}">Actividades anuales</a></p>
 
 {% endblock body_main %}

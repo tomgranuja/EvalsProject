@@ -1,10 +1,75 @@
 {% extends "evaluations/base.html" %}
 {% load static %}
+{% load i18n %}
+{% load attendance_extras %}
 
 {% block title %} <title>Actividades anuales</title> {% endblock %}
 {% block head %}
 {{ block.super }}
   <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+
+  <style>
+    .month-name {
+      font-weight: 600;
+    }
+
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-template-rows: 1.5em;
+      grid-auto-rows: minmax(max-content, 5.5em);
+      overflow: auto;
+      max-width: 64em;
+      padding: 0;
+    }
+
+    .day-header, .day-cell {
+/*       padding: 0.3em; */
+    }
+
+    .day-header {
+      font-weight: 600;
+    }
+
+    .day-cell {
+      border: 1px solid var(--color-gray-blue);
+/*       margin: 0.5em 0em; */
+      padding: 0.3em;
+    }
+
+    .day-cell .day-number {
+      text-align:right;
+      color: var(--color-gray-550);
+    }
+
+    .day-cell a.activity {
+      display: block;
+      background: #d1e1ff;
+      border-left-color: #7b96ff;
+      border-left-width: 0.3em;
+      padding: 8px 12px;
+      margin: 0.4em;
+      border-left-style: solid;
+      text-decoration: none;
+      color: var(--color-gray-550);
+    }
+
+    .day-cell a.activity.activity-ok {
+      background: #d0f2df;
+      border-left-color: #2fac66;
+    }
+
+    .day-cell a.activity.activity-warning {
+      background: #ffe1e1;
+      border-left-color: #ff0000;
+    }
+
+    .day-cell a.activity.activity-info {
+      background: #fdf2e6;
+      border-left-color: #fd9f3d;
+    }
+
+  </style>
 {% endblock %}
 
 
@@ -22,12 +87,47 @@
 
 
 {% block body_main %}
-  
-  <h2 class='top-title'>Actividades anuales 2026 </h2>
-  <ul>
-    {% for activity in activities %}
-      <li><a href={% url 'activity_attendance_cycles' activity.pk %}>{{ activity }}</a></li>
-    {% endfor %}
-  </ul>
+
+
+  {% for year, month_dates in calendar.years.items %}
+    <h2 class='top-title'>Actividades anuales {{ year }} </h2>
+
+    <div class='calendar-year-container'>
+      {% language 'es' %}
+        {% for month_date, weeks in month_dates.items %}
+          <h3 class='month-name' id='{{ month_date |year_month_id }}'>{{ month_date |date:"F" |capfirst }}</h3>
+          <div class='month-grid'>
+            
+            <!-- Day names grid header -->
+            {% for date in weeks.0 %}
+              <div class='day-header'>{{ date |date:"l" |capfirst }}</div>
+            {% endfor %}
+            
+            <!-- Seven day cells weeks grid -->
+            {% for week in weeks %}
+                {% for date, acts in week.items %}
+                  <div class='day-cell'>
+                    <div class='day-number'>{{ date |date:'d'}}</div>
+                      {% for act in acts %}
+                        {% if act.has_started %}
+                          {% if act.has_none_present_attendance %}
+                            <a class='activity activity-warning' href={% url 'activity_attendance_cycles' act.pk %}>{{ act.get_activity_type_display }}</a>
+                          {% else %}
+                            <a class='activity activity-ok' href={% url 'activity_attendance_cycles' act.pk %}>{{ act.get_activity_type_display }}</a>
+                          {% endif %}
+                        {% else %}
+                          <a class='activity activity-info' href={% url 'activity_attendance_cycles' act.pk %}>{{ act.get_activity_type_display }}</a>
+                        {% endif %}
+                      {% endfor %}
+                  </div>
+                {% endfor %}
+            {% endfor %}
+            
+          </div>
+        {% endfor %}
+      {% endlanguage %}
+    </div>
+  {% endfor %}
+
 
 {% endblock body_main %}

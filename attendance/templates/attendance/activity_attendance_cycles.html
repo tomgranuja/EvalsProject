@@ -1,10 +1,36 @@
 {% extends "evaluations/base.html" %}
 {% load static %}
+{% load attendance_extras %}
 
 {% block title %} <title>Elegir Ciclo</title> {% endblock %}
 {% block head %}
 {{ block.super }}
   <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+
+  <style>
+
+    .vertical-link-flex-item a.status-ok {
+      border-left-color: #2fac66;
+    }
+
+    .vertical-link-flex-item a.status-ok::after {
+      content: "\2713"; /* Hex without &#x and ; */
+      font-weight: 600;
+      font-size: 1.4em;
+      color: #2fac66;
+    }
+
+    .vertical-link-flex-item a.status-warning {
+      border-left-color: #ff0000;
+    }
+
+    a span.warning {
+      color: #ff0000;
+      font-weight: 600;
+    }
+
+  </style>
+
 {% endblock %}
 
 
@@ -24,11 +50,23 @@
 {% block body_main %}
   
   <h2 class='top-title'>Elegir ciclo para registrar</h2>
-  <p class='text-secondary'><span class='text-secondary'>{{ activity }} </span><a href={% url 'activities' %}>Otras actividades</a></p>
+  <p class='text-secondary'><span class='text-secondary'>{{ activity }} </span><a href="{% url 'activities' %}#{{ activity.start |year_month_id }}">Otras actividades</a></p>
   <div class="vertical-links-flex">
-    {% for cycle in cycles %}
+    {% for cycle, warning_status in status.items %}
       <div class="vertical-link-flex-item">
-        <a href={% url 'activity_attendance_single_cycle' activity.pk  cycle.pk %}>{{ cycle }}</a>
+        {% if activity.has_started %}
+          {% if warning_status %}
+            <a class='status-warning' href={% url 'activity_attendance_single_cycle' activity.pk  cycle.pk %}>
+              {{ cycle }} <span class='warning'>(sin presentes)<span>
+            </a>
+          {% else %}
+            <a class='status-ok' href={% url 'activity_attendance_single_cycle' activity.pk  cycle.pk %}>
+              {{ cycle }} <span class='ok'><span>
+            </a>
+          {% endif %}
+        {% else %}
+          <a href={% url 'activity_attendance_single_cycle' activity.pk  cycle.pk %}>{{ cycle }}</a>
+        {% endif %}
       </div>
     {% endfor %}
       <div class="vertical-link-flex-item">

@@ -1,3 +1,5 @@
+import calendar
+
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -25,24 +27,78 @@ def activity_none_found(request):
     return render(
         request,
         'attendance/activity_none_found.html',
+        {'now_datetime': timezone.now() },
         )
 
+class ActivityCalendar():
+    'Helper for passing structure to activity template'
+    
+    CAL = calendar.Calendar()
+    
+    def __init__(self, activities):
+        self.activities = activities
+        self.years = self.activity_calendar_structure()
+    
+    def activity_calendar_structure(self):
+        'Years-months-weeks-dates-activities nested structure'
+        
+        return {
+            year: {
+                timezone.datetime(year, month,1): [
+                    { date: self.date_activities(date) for date in week }
+                    for week in self.month_dates_by_weeks(year, month)
+                ]
+                for month in self.get_year_busy_months(year)
+            }
+            for year in self.get_busy_years()
+        }
+    
+    def get_busy_years(self):
+        'Years with activities.'
+        
+        return sorted({ a.start.date().year for a in self.activities })
+    
+    def get_year_busy_months(self, year):
+        "Year's months with activities."
+        
+        return sorted({
+            a.start.date().month
+            for a in self.activities.filter(start__date__year=year)
+        })
+    
+    def month_dates_by_weeks(self, year, month):
+        'Nested dates in weeks list.'
+        
+        return self.CAL.monthdatescalendar(year, month)
+    
+    def date_activities(self, date):
+        'Activities queryset that start on date.'
+        
+        return SchoolActivity.objects.filter(start__date=date)
+        
+
 def activities(request):
+    
+    activity_calendar = ActivityCalendar(SchoolActivity.objects.all())
+    
     return render(
         request,
         'attendance/activities.html',
-        {
-            'activities': SchoolActivity.objects.all(),
-            },
-        )
+        { 'calendar': activity_calendar },
+    )
 
 def activity_attendance_cycles(request, activity_pk):
+    activity = SchoolActivity.objects.get(pk=activity_pk)
+    warning_status_by_cycle = {
+        cycle: activity.has_none_present_attendance(cycle)
+        for cycle in Cycle.objects.all()
+    }
     return render(
         request,
         'attendance/activity_attendance_cycles.html',
         {
-            'activity': SchoolActivity.objects.get(pk=activity_pk),
-            'cycles': Cycle.objects.all(),
+            'activity': activity,
+            'status': warning_status_by_cycle,
             },
         )
 
