@@ -1,9 +1,8 @@
-import datetime
-
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.utils import timezone
 
 from evaluations.models import Cycle, Teacher
 from evaluations.views import is_teacher_or_staff
@@ -13,7 +12,7 @@ from .forms import AttendanceFormSet, AttendanceNominaFormSet
 # Create your views here.
 
 def today_attendance(request):
-    activities = SchoolActivity.objects.filter(start__date=datetime.date.today())
+    activities = SchoolActivity.objects.filter(start__date=timezone.localtime().date())
     if activities.exists():
         return HttpResponseRedirect(reverse(
             activity_attendance_cycles,
