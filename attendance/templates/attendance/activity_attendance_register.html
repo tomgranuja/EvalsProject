@@ -1,37 +1,90 @@
 {% extends "evaluations/base.html" %}
 {% load static %}
+{% load i18n %}
+{% load attendance_extras %}
 
 {% block title %} <title>Registro de asistencia</title> {% endblock %}
 {% block head %}
 {{ block.super }}
   <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+  <style>
+
+    h2.top-title span.small-text {
+      font-size: 0.7em;
+      font-weight: 400;
+    }
+
+    h2.top-title span.small-text a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+  </style>
 {% endblock %}
 
 
 {% block body_header %}
-<nav>
-  <ul>
-    <li><a href={% url 'activity_attendance_cycles' activity.pk %}>Otros ciclos</a></li>
-  <!--
-    <li><a href={% url 'today_attendance' %}>Meses</a></li>
-    <li><a href={% url 'today_attendance' %}>Ciclos</a></li>
-  -->
-  </ul>
-</nav>
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id='calendar-header-item' class="header-item">
+          <a href="{% url 'activities' %}#{{ activity.start |year_month_id }}" %}>Calendario</a>
+        </li>
+        <li id='today-attendance-header-item' class="header-item">
+          <a href="{% url 'today_attendance' %}">Hoy</a>
+        </li>
+        {% if cycles|length == 1 %}
+          <li id='cycles-header-item' class="header-item">
+            <a href={% url 'activity_attendance_cycles' activity.pk %}>Ciclos</a>
+          </li>
+        {% endif %}
+        <li id="all-teachers-header-item" class="header-item">
+          <a href="{% url 'teachers' %}">Guias</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
 {% endblock body_header %}
 
 
 {% block body_main %}
   
-  <h2 class='top-title'>Registro de asistencia</h2>
+  {% if cycles|length == 1 %}
+    <h2 class='top-title'>
+      Registro de asistencia
+      {{ cycles.0 }}
+    </h2>
+  {% else %}
+    <h2 class='top-title'>
+      Registro de asistencia
+      <span class='small-text'>
+        {% for cycle in cycles %}
+          {% if not forloop.last %}
+            <a href={% url 'activity_attendance_single_cycle' activity.pk  cycle.pk %}>{{ cycle }}</a>,
+          {% else %}
+            <a href={% url 'activity_attendance_single_cycle' activity.pk  cycle.pk %}>{{ cycle }}</a>
+          {% endif %}
+        {% endfor %}
+      </span>
+    </h2>
+  {% endif %}
 
 
-  <p class='text-secondary'>
-    {{ activity }}
-    {% for cycle in cycles %}
-      {{ cycle }}
-    {% endfor %}
-  </p>
+  <nav class='adjacent-spinner-flex text-secondary'>
+    <a class='adjacent-spinner-flex-link left-link' href="{{ prev_link }}"> << </a>
+    <div class='adjacent-spinner-flex-date'>
+      <p>
+        {% language 'es' %}
+          {{ activity.start.date |date:"l j \d\e F \d\e Y" |capfirst }}
+        {% endlanguage %}
+      </p>
+      <p>
+        ({{ activity.get_activity_type_display }})
+      </p>
+    </div>
+    <a class='adjacent-spinner-flex-link right-link' href="{{ next_link }}"> >> </a>
+  </nav>
 
   {% if formset.total_form_count > 0 %}
     <form method="post">

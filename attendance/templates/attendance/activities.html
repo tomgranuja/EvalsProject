@@ -74,15 +74,18 @@
 
 
 {% block body_header %}
-<nav>
-  <ul>
-    <li><a href={% url 'teachers' %}>Guias</a></li>
-  <!--
-    <li><a href={% url 'today_attendance' %}>Meses</a></li>
-    <li><a href={% url 'today_attendance' %}>Ciclos</a></li>
-  -->
-  </ul>
-</nav>
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id='today-attendance-header-item' class="header-item">
+          <a href="{% url 'today_attendance' %}">Hoy</a>
+        </li>
+        <li id="all-teachers-header-item" class="header-item">
+          <a href="{% url 'teachers' %}">Guias</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
 {% endblock body_header %}
 
 

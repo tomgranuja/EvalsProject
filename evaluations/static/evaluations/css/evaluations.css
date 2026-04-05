@@ -57,7 +57,7 @@ h1, h2, h3, .display-1, .display-2, .display-3, .display-4, .display-5, .display
 
 /* ===== Forms and form tables ===== */
 form {
-  max-width: 600px;
+  max-width: 40em;
 }
 
 form tr:hover {
@@ -153,6 +153,40 @@ input[type=submit] {
 
 .vertical-link-flex-item a:active {
   color: red;
+}
+
+/* ===== Adjacent spinner flex nav ===== */
+nav.adjacent-spinner-flex {
+  display: flex;
+  justify-content: flex-start;
+  gap: 5px;
+  max-width: 30em;
+}
+
+nav.adjacent-spinner-flex > a.adjacent-spinner-flex-link {
+  display: block;
+  flex: 4 1 30%;
+  color: inherit;
+  text-decoration: none;
+  font-size: 1.4em;
+  padding: 0.2em;
+}
+
+nav.adjacent-spinner-flex > a.adjacent-spinner-flex-link.left-link {
+  text-align:left;
+}
+
+nav.adjacent-spinner-flex > a.adjacent-spinner-flex-link.right-link {
+  text-align:right;
+}
+
+nav.adjacent-spinner-flex > .adjacent-spinner-flex-date {
+  flex: 1 0 auto;
+}
+
+nav.adjacent-spinner-flex > .adjacent-spinner-flex-date p {
+  margin: 0.2em 0;
+  text-align: center;
 }
 
 /* ===== Handson table theme and controls ===== */

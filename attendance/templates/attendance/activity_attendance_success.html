@@ -1,5 +1,7 @@
 {% extends "evaluations/base.html" %}
 {% load static %}
+{% load i18n %}
+{% load attendance_extras %}
 
 {% block title %} <title>Registrado</title> {% endblock %}
 {% block head %}
@@ -9,31 +11,49 @@
 
 
 {% block body_header %}
-<nav>
-  <ul>
-  <!--
-    <li><a href={% url 'today_attendance' %}>Meses</a></li>
-    <li><a href={% url 'today_attendance' %}>Ciclos</a></li>
-  -->
-  </ul>
-</nav>
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id='calendar-header-item' class="header-item">
+          <a href="{% url 'activities' %}#{{ activity.start |year_month_id }}" %}>Calendario</a>
+        </li>
+        <li id='today-attendance-header-item' class="header-item">
+          <a href="{% url 'today_attendance' %}">Hoy</a>
+        </li>
+        <li id="all-teachers-header-item" class="header-item">
+          <a href="{% url 'teachers' %}">Guias</a>
+        </li>
+        {% if cycles|length == 1 %}
+          <li id='cycles-header-item' class="header-item">
+            <a href={% url 'activity_attendance_cycles' activity.pk %}>Volver</a>
+          </li>
+        {% endif %}
+      <!--
+        <li><a href={% url 'today_attendance' %}>Meses</a></li>
+        <li><a href={% url 'today_attendance' %}>Ciclos</a></li>
+      -->
+      </ul>
+    </nav>
+  </header>
 {% endblock body_header %}
 
 
 {% block body_main %}
   
   <h2 class='top-title'>Registrado</h2>
+    {% language 'es' %}
+      <p class='text-secondary'>
+        {{ activity.start.date |date:"l j \d\e F \d\e Y" |capfirst }}
+        ({{ activity.get_activity_type_display }})
+      </p>
+    {% endlanguage %}
   <p class='text-secondary'>
-    {{ activity }}
-    {% for cycle in cycles %}
-      {{ cycle.name }}
-    {% endfor %}
+    ({% for cycle in cycles %} {{ cycle.name }} {% endfor %})
   </p>
   <ul>
     {% for attendance in attendances %}
       <li>{{ attendance.student.cycle }} {{ attendance.student  }} ---> {{ attendance.is_present_long_display }}</li>
     {% endfor %}
   </ul>
-  <p><a href={% url 'activity_attendance_cycles' activity.pk %}>Volver</a></p>
 
 {% endblock body_main %}

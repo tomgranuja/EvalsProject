@@ -1,5 +1,6 @@
 {% extends "evaluations/base.html" %}
 {% load static %}
+{% load i18n %}
 {% load attendance_extras %}
 
 {% block title %} <title>Elegir Ciclo</title> {% endblock %}
@@ -35,22 +36,43 @@
 
 
 {% block body_header %}
-<nav>
-  <ul>
-  <!--
-    <li><a href={% url 'activities' %}>Otras actividades</a></li>
-    <li><a href={% url 'today_attendance' %}>Meses</a></li>
-    <li><a href={% url 'today_attendance' %}>Ciclos</a></li>
-  -->
-  </ul>
-</nav>
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id='calendar-header-item' class="header-item">
+          <a href="{% url 'activities' %}#{{ activity.start |year_month_id }}" %}>Calendario</a>
+        </li>
+        <li id='today-attendance-header-item' class="header-item">
+          <a href="{% url 'today_attendance' %}">Hoy</a>
+        </li>
+        <li id="all-teachers-header-item" class="header-item">
+          <a href="{% url 'teachers' %}">Guias</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
 {% endblock body_header %}
 
 
 {% block body_main %}
   
   <h2 class='top-title'>Elegir ciclo para registrar</h2>
-  <p class='text-secondary'><span class='text-secondary'>{{ activity }} </span><a href="{% url 'activities' %}#{{ activity.start |year_month_id }}">Otras actividades</a></p>
+
+  <nav class='adjacent-spinner-flex text-secondary'>
+    <a class='adjacent-spinner-flex-link left-link' href="{{ prev_link }}"> << </a>
+    <div class='adjacent-spinner-flex-date'>
+      <p>
+        {% language 'es' %}
+          {{ activity.start.date |date:"l j \d\e F \d\e Y" |capfirst }}
+        {% endlanguage %}
+      </p>
+      <p>
+        ({{ activity.get_activity_type_display }})
+      </p>
+    </div>
+    <a class='adjacent-spinner-flex-link right-link' href="{{ next_link }}"> >> </a>
+  </nav>
+
   <div class="vertical-links-flex">
     {% for cycle, warning_status in status.items %}
       <div class="vertical-link-flex-item">

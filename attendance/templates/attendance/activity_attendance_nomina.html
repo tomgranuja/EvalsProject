@@ -1,5 +1,7 @@
 {% extends "evaluations/base.html" %}
 {% load static %}
+{% load i18n %}
+{% load attendance_extras %}
 
 {% block title %} <title>Nómina</title> {% endblock %}
 {% block head %}
@@ -9,15 +11,26 @@
 
 
 {% block body_header %}
-<nav>
-  <ul>
-
-    <li><a href={% url 'activity_attendance_cycles' activity.pk %}>Volver al registro de asistencia</a></li>
-  <!--
-    <li><a href={% url 'today_attendance' %}>Ciclos</a></li>
-  -->
-  </ul>
-</nav>
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id='calendar-header-item' class="header-item">
+          <a href="{% url 'activities' %}#{{ activity.start |year_month_id }}" %}>Calendario</a>
+        </li>
+        <li id='today-attendance-header-item' class="header-item">
+          <a href="{% url 'today_attendance' %}">Hoy</a>
+        </li>
+        <li id="all-teachers-header-item" class="header-item">
+          <a href="{% url 'teachers' %}">Guias</a>
+        </li>
+        {% if cycles|length == 1 %}
+          <li id='cycles-header-item' class="header-item">
+            <a href={% url 'activity_attendance_cycles' activity.pk %}>Volver</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
 {% endblock body_header %}
 
 
@@ -25,11 +38,23 @@
   
   <h2 class='top-title'>Nómina de estudiantes</h2>
 
+  <nav class='adjacent-spinner-flex text-secondary'>
+    <a class='adjacent-spinner-flex-link left-link' href="{{ prev_link }}"> << </a>
+    <div class='adjacent-spinner-flex-date'>
+      <p>
+        {% language 'es' %}
+          {{ activity.start.date |date:"l j \d\e F \d\e Y" |capfirst }}
+        {% endlanguage %}
+      </p>
+      <p>
+        ({{ activity.get_activity_type_display }})
+      </p>
+    </div>
+    <a class='adjacent-spinner-flex-link right-link' href="{{ next_link }}"> >> </a>
+  </nav>
+
   <p class='text-secondary'>
-    {{ activity }}
-    {% for cycle in cycles %}
-      {{ cycle }}
-    {% endfor %}
+    ({% for cycle in cycles %} {{ cycle }} {% endfor %})
   </p>
 
   <form method="post">

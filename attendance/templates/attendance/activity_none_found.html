@@ -11,15 +11,21 @@
 
 
 {% block body_header %}
-<nav>
-  <ul>
-    <li><a href={% url 'teachers' %}>Guias</a></li>
-  <!--
-    <li><a href={% url 'today_attendance' %}>Meses</a></li>
-    <li><a href={% url 'today_attendance' %}>Ciclos</a></li>
-  -->
-  </ul>
-</nav>
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id='calendar-header-item' class="header-item">
+          <a href="{% url 'activities' %}#{{ now_datetime |year_month_id }}" %}>Calendario</a>
+        </li>
+        <li id='today-attendance-header-item' class="header-item">
+          <a href="{% url 'today_attendance' %}">Hoy</a>
+        </li>
+        <li id="all-teachers-header-item" class="header-item">
+          <a href="{% url 'teachers' %}">Guias</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
 {% endblock body_header %}
 
 
@@ -29,6 +35,5 @@
   {% language 'es' %}
     <p class='text-secondary'>{{ now_datetime |date:"l j \d\e F \d\e Y" |capfirst }}</p>
   {% endlanguage %}
-  <p><a href="{% url 'activities' %}#{{ now_datetime |year_month_id }}">Actividades anuales</a></p>
 
 {% endblock body_main %}

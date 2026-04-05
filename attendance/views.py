@@ -98,6 +98,16 @@ def activity_attendance_cycles(request, activity_pk):
         'attendance/activity_attendance_cycles.html',
         {
             'activity': activity,
+            'prev_link': _get_adjacent_activity_link(
+                activity,
+                use_view=activity_attendance_cycles,
+                n=-1,
+            ),
+            'next_link': _get_adjacent_activity_link(
+                activity,
+                use_view=activity_attendance_cycles,
+                n=1
+            ),
             'status': warning_status_by_cycle,
             },
         )
@@ -131,6 +141,16 @@ def activity_attendance_nomina(request, activity_pk, cycle_pk=None):
         'attendance/activity_attendance_nomina.html',
         {
             'activity': activity,
+            'prev_link': _get_adjacent_activity_link(
+                activity,
+                use_view=activity_attendance_nomina,
+                n=-1,
+            ),
+            'next_link': _get_adjacent_activity_link(
+                activity,
+                use_view=activity_attendance_nomina,
+                n=1,
+            ),
             'cycles': cycles,
             'formset': formset,
             },
@@ -165,6 +185,8 @@ def activity_attendance_all_cycles(request, activity_pk):
         'attendance/activity_attendance_register.html',
         {
             'activity': activity,
+            'prev_link': _get_adjacent_activity_link(activity, n=-1),
+            'next_link': _get_adjacent_activity_link(activity, n=1),
             'cycles': cycles,
             'formset': formset,
             },
@@ -174,6 +196,7 @@ def activity_attendance_all_cycles(request, activity_pk):
 @login_required
 def activity_attendance_single_cycle(request, activity_pk, cycle_pk):
     activity = SchoolActivity.objects.get(pk=activity_pk)
+    prev_activity_link = SchoolActivity.objects.filter
     cycle = Cycle.objects.get(pk=cycle_pk)
     initial = _attendance_formset_initial(activity, cycle)
     # print(initial)
@@ -200,10 +223,43 @@ def activity_attendance_single_cycle(request, activity_pk, cycle_pk):
         'attendance/activity_attendance_register.html',
         {
             'activity': activity,
+            'prev_link': _get_adjacent_activity_link(
+                activity,
+                cycle,
+                use_view=activity_attendance_single_cycle,
+                n=-1,
+            ),
+            'next_link': _get_adjacent_activity_link(
+                activity,
+                cycle,
+                use_view=activity_attendance_single_cycle,
+                n=1
+            ),
             'cycles': [cycle],
             'formset': formset,
             },
         )
+
+def _get_adjacent_activity_link(
+    activity,
+    cycle=None,
+    use_view=activity_attendance_all_cycles,
+    n=1,
+):
+
+    pks = [a.pk for a in SchoolActivity.objects.order_by('start')]
+    adjacent_activity_pk = pks[ (pks.index(activity.pk) + n) % len(pks) ]
+    if cycle is not None:
+        link = reverse(
+            use_view,
+            args=[adjacent_activity_pk, cycle.pk],
+        )
+    else:
+        link = reverse(
+            use_view,
+            args=[adjacent_activity_pk],
+        )
+    return link
 
 def _attendance_formset_to_db(formset):
     registered = []
