@@ -173,8 +173,10 @@
         console.log('onAfterChangeOnce triggered.');
         output_msg_update('Click "Guardar" para guardar cambios.');
       });
-      // workaround second adHookOnce not working.
-      hot.pluginHookBucket.getHooks('afterChange')[0].skip=false;
+      // The following workaround is not needed because it was fixed in
+      // handsontable version 16.2.0
+      //
+      // hot.pluginHookBucket.getHooks('afterChange')[0].skip=false;
     }
 
     function on_POST_reject(err) {
