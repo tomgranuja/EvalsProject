@@ -20,7 +20,10 @@
         </li>
         {% if user.is_authenticated %}
           <li id="logout-header-item" class="header-item">
-            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Salir</a>
+            <a href="#"
+              onclick='event.preventDefault();confirm("Confirmar salida. ¿Desea salir y volver a la página de login?") && document.getElementById("logout-form").submit();'>
+              Salir
+            </a>
 
             <form id="logout-form" action="{% url 'logout' %}?next={% url 'login' %}" method="post">
               {% csrf_token %}
