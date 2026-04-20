@@ -240,6 +240,11 @@ def eval_results(request, subject_pk, eval_design_pk):
                 evalresult = eval_design.evalresult_set.get(pk=pk)
                 evalresult.score = r
                 evalresult.comment = c
+                # Prevent NULL in NOT NULL database IntegrityError
+                # in case the hot table json data contains null.
+                # (e.g., cell deleted by user by pressing backspace)
+                if evalresult.comment is None:
+                    evalresult.comment = ''
                 evalresult.save()
         return JsonResponse({
             'message': 'Data saved',
