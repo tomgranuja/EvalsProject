@@ -33,7 +33,7 @@ def index(request):
     return HttpResponseRedirect(reverse(teachers))
 
 def is_teacher(user):
-    return Teacher.objects.filter(user=user.pk).exists()
+    return Teacher.active.filter(user=user.pk).exists()
 
 def is_teacher_or_staff(user):
     return is_teacher(user) or user.is_staff
@@ -47,7 +47,7 @@ def profile(request):
 
 
 def teachers(request):
-    teachers = Teacher.objects.all()
+    teachers = Teacher.active.all()
     return render(request, 
                   'evaluations/teachers.html',
                   {'teachers': teachers,})
@@ -83,7 +83,7 @@ def subjects(request):
 @login_required
 def subject_student_enroll(request, subject_pk):
     subject = Subject.objects.get(pk=subject_pk)
-    students = Student.objects.exclude(cycle__name='Retirado').order_by('cycle')
+    students = Student.active.exclude(cycle__name='Retirado').order_by('cycle')
     initial = _student_enroll_form_initial(subject_pk)
     
     if request.method == 'POST':
@@ -103,7 +103,7 @@ def _student_enroll_form_initial(subject_pk):
     return [ {'student': s,
               'enroll_field': s.has_subject_student(subject_pk),
                   }
-             for s in Student.objects.exclude(cycle__name='Retirado').order_by('cycle','grade')]
+             for s in Student.active.exclude(cycle__name='Retirado').order_by('cycle','grade')]
 
 def _student_enroll_formset_to_db(formset, subject_pk):
     done = {'added': [], 'removed':[]}
@@ -156,7 +156,7 @@ def _student_edit_form_initial(subject_pk):
             'active_field': s.active,
             'informed_field': s.informed,
             }
-        for s in SubjectStudent.objects.filter(subject=subject_pk).order_by('student__cycle', 'student__grade')
+        for s in SubjectStudent.user_active.filter(subject=subject_pk).order_by('student__cycle', 'student__grade')
         ]
 
 def _student_edit_formset_to_db(formset, subject_pk):
@@ -175,7 +175,7 @@ def _student_edit_formset_to_db(formset, subject_pk):
 def eval_design_new(request, subject_pk):
     initial = {
         'subject': Subject.objects.get(pk=subject_pk),
-        'subject_students': SubjectStudent.objects.filter(subject=subject_pk, active=True),
+        'subject_students': SubjectStudent.user_active.filter(subject=subject_pk, active=True),
         }
     eval_design = EvalDesign(subject=initial['subject'])
     if request.method == 'POST':
@@ -223,7 +223,7 @@ def eval_results(request, subject_pk, eval_design_pk):
     eval_design = EvalDesign.objects.get(pk=eval_design_pk)
     table_headers = ['Id', 'Estudiante', 'Nota', 'Comentario']
     initial_table = []
-    for r in eval_design.evalresult_set.all():
+    for r in eval_design.evalresult_set.exclude(subject_student__student__user__is_active=False):
         initial_table.append( [
             r.pk,
             str(r.subject_student.student),
@@ -250,7 +250,7 @@ def eval_results(request, subject_pk, eval_design_pk):
                     r.score,
                     r.comment,
                     ]
-                for r in eval_design.evalresult_set.all()
+                for r in eval_design.evalresult_set.exclude(subject_student__student__user__is_active=False)
                 ]
             },
             safe=False,
@@ -271,7 +271,7 @@ def eval_results(request, subject_pk, eval_design_pk):
 def subject_eval_results(request, subject_pk):
     subject = Subject.objects.get(pk=subject_pk)
     eval_designs = EvalDesign.objects.filter(subject=subject)
-    students = subject.students.all()
+    students = subject.students.exclude(user__is_active=False)
     # TODO
     # Student not included in certain evaldesign
     # should have their handsontable cell disabled

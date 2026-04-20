@@ -19,7 +19,7 @@ class EvalDesignForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['subject_students'] = EvalDesignMultipleChoiceField(
-            queryset=SubjectStudent.objects.filter(
+            queryset=SubjectStudent.user_active.filter(
                 subject=self.initial['subject'],
                 active=True,
                 ).order_by('student__cycle', 'student__grade')

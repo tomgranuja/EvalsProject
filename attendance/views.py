@@ -119,11 +119,11 @@ def activity_attendance_nomina(request, activity_pk, cycle_pk=None):
     cycles = Cycle.objects.all()
     if cycle_pk is not None:
         cycles = cycles.filter(pk=cycle_pk)
-    students = Student.objects.filter(cycle__in=cycles)
+    students = Student.active.filter(cycle__in=cycles)
     initial = [{
         'student': st,
         'include': activity.students.filter(pk=st.pk).exists()
-        } for st in Student.objects.filter(cycle__in=cycles).order_by('cycle', 'grade')]
+        } for st in Student.active.filter(cycle__in=cycles).order_by('cycle', 'grade')]
     if request.method == 'POST':
         formset = AttendanceNominaFormSet(request.POST, initial=initial)
         if formset.is_valid():
@@ -279,7 +279,7 @@ def _attendance_formset_initial(activity, cycles):
     if isinstance(cycles, Cycle):
         cycles = [cycles]
     initial = []
-    students = activity.students.filter(cycle__in=cycles)
+    students = activity.students.filter(cycle__in=cycles, user__is_active=True)
     if students.exists():
         for student in students:
             attendance = Attendance.objects.get(activity=activity, student=student)
@@ -291,7 +291,7 @@ def _attendance_formset_initial(activity, cycles):
                 'retire_time': attendance.retire_time,
                 })
     else:
-        students = Student.objects.filter(cycle__in=cycles)
+        students = Student.active.filter(cycle__in=cycles)
         for student in students:
             initial.append({
                 'activity': activity,

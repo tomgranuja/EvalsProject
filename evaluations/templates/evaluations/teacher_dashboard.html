@@ -239,7 +239,7 @@
           
           <div class='subject-card-content'>
             <h4 class='subject-name'>{{ subject.name }}</h4>
-            <small class='text-secondary'>{{ subject.students.all | length }} estudiantes</small>
+            <small class='text-secondary'>{{ subject.user_active_students | length }} estudiantes</small>
           </div>
           
           <a class='card-link' href="#subject-{{ subject.pk }}-evals"></a>
@@ -260,7 +260,7 @@
   
     {% for subject, subject_evaluations in evaluations.items %}
       
-      <h3 class='display-5 subject-title' id="subject-{{ subject.pk }}-evals">{{ subject.name }} <small class='text-secondary'>({{ subject.students.all | length }} estudiantes)</small></h3>
+      <h3 class='display-5 subject-title' id="subject-{{ subject.pk }}-evals">{{ subject.name }} <small class='text-secondary'>({{ subject.user_active_students | length }} estudiantes)</small></h3>
       
       
 <!-- Subject related navigation button and hidden links       -->
@@ -303,7 +303,7 @@
           <div class="subject-card">
             <div class="subject-card-content">
               <p class="evaluation-name"><span>&rarr;</span> {{ evaluation }}</p>
-              <small class='text-secondary student-count'>{{ evaluation.subject_students.count }} estudiantes</small>
+              <small class='text-secondary student-count'>{{ evaluation.user_active_subject_students | length }} estudiantes</small>
             </div>
             <a class='eval-design-link' href="{% url 'eval_design_edit' subject.pk evaluation.pk  %}"></a>
           </div>

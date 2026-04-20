@@ -17,6 +17,10 @@ class Cycle(models.Model):
     def __str__(self):
         return self.name
     
+class UserActiveObjectManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(user__is_active=True)
+
 class Teacher(models.Model):
     '''Extend user for teacher information.'''
 
@@ -31,6 +35,9 @@ class Teacher(models.Model):
     color = models.CharField(
         max_length=10,
         )
+    
+    objects = models.Manager()
+    active = UserActiveObjectManager()
 
     def __str__(self):
         return self.name
@@ -69,6 +76,9 @@ class Student(models.Model):
                 grade_str = 'prekinder kinder'.split()[grade-PRESCHOOL]
         return grade_str
 
+    objects = models.Manager()
+    active = UserActiveObjectManager()
+    
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name[0]}.'
     
@@ -92,8 +102,15 @@ class Subject(models.Model):
         on_delete=models.CASCADE,)
     informed = models.BooleanField(default=True)
     
+    def user_active_students(self):
+        return self.students.exclude(user__is_active=False)
+    
     def __str__(self):
         return self.name
+
+class UserActiveSubjectStudentManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(student__user__is_active=True)
 
 class SubjectStudent(models.Model):
     '''Subject and Student m2m through table.'''
@@ -106,6 +123,9 @@ class SubjectStudent(models.Model):
         )
     active = models.BooleanField(default=True)
     informed = models.BooleanField(default=True)
+    
+    objects = models.Manager()
+    user_active = UserActiveSubjectStudentManager()
     
     def __str__(self):
         return f'{self.student} in {self.subject}'
@@ -142,6 +162,9 @@ class EvalDesign(models.Model):
         through="EvalResult",
         verbose_name="Estudiantes inscritos"
         )
+    
+    def user_active_subject_students(self):
+        return self.subject_students.exclude(student__user__is_active=False)
     
     def __str__(self):
         return self.name
