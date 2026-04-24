@@ -14,24 +14,18 @@
   <header>
     <nav>
       <ul id="header-flex">
-        <li id='calendar-header-item' class="header-item">
-          <a href="{% url 'activities' %}#{{ activity.start |year_month_id }}" %}>Calendario</a>
-        </li>
+        {% if cycles|length == 1 %}
+          <li id='register-header-item' class="header-item">
+            <a href={% url 'activity_attendance_single_cycle' activity.pk  cycles.0.pk %}>Registro</a>
+          </li>
+        {% else %}
+          <li id='register-header-item' class="header-item">
+            <a href={% url 'activity_attendance_all_cycles' activity.pk %}>Registro</a>
+          </li>
+        {% endif %}
         <li id='today-attendance-header-item' class="header-item">
           <a href="{% url 'today_attendance' %}">Hoy</a>
         </li>
-        <li id="all-teachers-header-item" class="header-item">
-          <a href="{% url 'teachers' %}">Guias</a>
-        </li>
-        {% if cycles|length == 1 %}
-          <li id='cycles-header-item' class="header-item">
-            <a href={% url 'activity_attendance_cycles' activity.pk %}>Volver</a>
-          </li>
-        {% endif %}
-      <!--
-        <li><a href={% url 'today_attendance' %}>Meses</a></li>
-        <li><a href={% url 'today_attendance' %}>Ciclos</a></li>
-      -->
       </ul>
     </nav>
   </header>
@@ -41,12 +35,20 @@
 {% block body_main %}
   
   <h2 class='top-title'>Registrado</h2>
-    {% language 'es' %}
-      <p class='text-secondary'>
-        {{ activity.start.date |date:"l j \d\e F \d\e Y" |capfirst }}
+  <nav class='adjacent-spinner-flex text-secondary'>
+    <a class='adjacent-spinner-flex-link left-link' href="{{ prev_link }}"> << </a>
+    <div class='adjacent-spinner-flex-date'>
+      <p>
+        {% language 'es' %}
+          {{ activity.start.date |date:"l j \d\e F \d\e Y" |capfirst }}
+        {% endlanguage %}
+      </p>
+      <p>
         ({{ activity.get_activity_type_display }})
       </p>
-    {% endlanguage %}
+    </div>
+    <a class='adjacent-spinner-flex-link right-link' href="{{ next_link }}"> >> </a>
+  </nav>
   <p class='text-secondary'>
     ({% for cycle in cycles %} {{ cycle.name }} {% endfor %})
   </p>

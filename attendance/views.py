@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils import timezone
 
-from evaluations.models import Cycle, Teacher
+from evaluations.models import Cycle, Student, Teacher
 from evaluations.views import is_teacher_or_staff
 from .models import SchoolActivity, Attendance, Student
 from .forms import AttendanceFormSet, AttendanceNominaFormSet
@@ -162,6 +162,8 @@ def activity_attendance_all_cycles(request, activity_pk):
     cycles = Cycle.objects.all()
     activity = SchoolActivity.objects.get(pk=activity_pk)
     initial = _attendance_formset_initial(activity, cycles)
+    prev_activity_link = _get_adjacent_activity_link(activity, n=-1)
+    next_activity_link = _get_adjacent_activity_link(activity, n=1)
     # print(f'###Initial data for formset:\n{initial}\n')
     if request.method == 'POST':
         formset = AttendanceFormSet(request.POST, initial=initial)
@@ -173,6 +175,8 @@ def activity_attendance_all_cycles(request, activity_pk):
                 'attendance/activity_attendance_success.html',
                 {
                     'activity': activity,
+                    'prev_link': prev_activity_link,
+                    'next_link': next_activity_link,
                     'cycles': cycles,
                     'attendances': attendances,
                     },
@@ -185,8 +189,8 @@ def activity_attendance_all_cycles(request, activity_pk):
         'attendance/activity_attendance_register.html',
         {
             'activity': activity,
-            'prev_link': _get_adjacent_activity_link(activity, n=-1),
-            'next_link': _get_adjacent_activity_link(activity, n=1),
+            'prev_link': prev_activity_link,
+            'next_link': next_activity_link,
             'cycles': cycles,
             'formset': formset,
             },
@@ -196,10 +200,20 @@ def activity_attendance_all_cycles(request, activity_pk):
 @login_required
 def activity_attendance_single_cycle(request, activity_pk, cycle_pk):
     activity = SchoolActivity.objects.get(pk=activity_pk)
-    prev_activity_link = SchoolActivity.objects.filter
     cycle = Cycle.objects.get(pk=cycle_pk)
+    prev_activity_link = _get_adjacent_activity_link(
+        activity,
+        cycle,
+        use_view=activity_attendance_single_cycle,
+        n=-1,
+    )
+    next_activity_link = _get_adjacent_activity_link(
+        activity,
+        cycle,
+        use_view=activity_attendance_single_cycle,
+        n=-1,
+    )
     initial = _attendance_formset_initial(activity, cycle)
-    # print(initial)
     if request.method == 'POST':
         #print(f'#####Se recibió el siguiente POST: \n{request.POST}\n#######Fin del POST')
         formset = AttendanceFormSet(request.POST, initial=initial)
@@ -211,6 +225,8 @@ def activity_attendance_single_cycle(request, activity_pk, cycle_pk):
                 'attendance/activity_attendance_success.html',
                 {
                     'activity': activity,
+                    'prev_link': prev_activity_link,
+                    'next_link': next_activity_link,
                     'cycles': [cycle],
                     'attendances': attendances,
                     },
@@ -223,18 +239,8 @@ def activity_attendance_single_cycle(request, activity_pk, cycle_pk):
         'attendance/activity_attendance_register.html',
         {
             'activity': activity,
-            'prev_link': _get_adjacent_activity_link(
-                activity,
-                cycle,
-                use_view=activity_attendance_single_cycle,
-                n=-1,
-            ),
-            'next_link': _get_adjacent_activity_link(
-                activity,
-                cycle,
-                use_view=activity_attendance_single_cycle,
-                n=1
-            ),
+            'prev_link': prev_activity_link,
+            'next_link': next_activity_link,
             'cycles': [cycle],
             'formset': formset,
             },
@@ -301,3 +307,70 @@ def _attendance_formset_initial(activity, cycles):
                 'retire_time': None,
                 })
     return initial
+
+def report_main(request):
+    return render(
+        request,
+        'attendance/report_main.html',
+        )
+
+@user_passes_test(is_teacher_or_staff)
+@login_required
+def report_cycle_attendance(request, cycle_pk):
+    cycle = Cycle.objects.get(pk=cycle_pk)
+    report = {
+        st: _student_attendance_resume(st)
+        for st in Student.active.filter(cycle__pk=cycle_pk)
+    }
+    return render(
+        request,
+        'attendance/report_cycle_attendance.html',
+        {
+            'cycle': cycle,
+            'report': report,
+        },
+    )
+
+def _student_attendance_resume(st):
+    attendance = Attendance.objects.filter(student=st)
+    present = attendance.filter(present=True)
+    attendance_count = attendance.count()
+    present_count = present.count()
+    rate =  present_count / attendance_count
+    return {
+        'present': present_count,
+        'attendance': attendance_count,
+        'percent': f'{rate*100:.0f}',
+        }
+
+def report_attendance_cycles(request):
+    return render(
+        request,
+        'attendance/report_attendance_cycles.html',
+        {
+            'cycles': Cycle.objects.all(),
+        },
+    )
+
+def report_attendance_students(request):
+    return render(
+        request,
+        'attendance/report_attendance_students.html',
+        {
+            'students': Student.active.all().order_by('cycle'),
+        },
+    )
+
+@user_passes_test(is_teacher_or_staff)
+@login_required
+def report_student_attendance(request, student_pk):
+    student = Student.objects.get(pk=student_pk)
+    report = _student_attendance_resume(student)
+    return render(
+        request,
+        'attendance/report_student_attendance.html',
+        {
+            'student': student,
+            'report': report,
+        },
+    )

@@ -77,11 +77,14 @@
   <header>
     <nav>
       <ul id="header-flex">
+        <li id="all-teachers-header-item" class="header-item">
+          <a href="{% url 'teachers' %}">Guias</a>
+        </li>
         <li id='today-attendance-header-item' class="header-item">
           <a href="{% url 'today_attendance' %}">Hoy</a>
         </li>
-        <li id="all-teachers-header-item" class="header-item">
-          <a href="{% url 'teachers' %}">Guias</a>
+        <li id='report-main-header-item' class="header-item">
+          <a href={% url 'report_main' %}>Reportes</a>
         </li>
       </ul>
     </nav>

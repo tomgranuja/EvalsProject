@@ -27,19 +27,11 @@
   <header>
     <nav>
       <ul id="header-flex">
-        <li id='calendar-header-item' class="header-item">
-          <a href="{% url 'activities' %}#{{ activity.start |year_month_id }}" %}>Calendario</a>
+        <li id='cycles-header-item' class="header-item">
+          <a href={% url 'activity_attendance_cycles' activity.pk %}>Ciclos</a>
         </li>
         <li id='today-attendance-header-item' class="header-item">
           <a href="{% url 'today_attendance' %}">Hoy</a>
-        </li>
-        {% if cycles|length == 1 %}
-          <li id='cycles-header-item' class="header-item">
-            <a href={% url 'activity_attendance_cycles' activity.pk %}>Ciclos</a>
-          </li>
-        {% endif %}
-        <li id="all-teachers-header-item" class="header-item">
-          <a href="{% url 'teachers' %}">Guias</a>
         </li>
       </ul>
     </nav>

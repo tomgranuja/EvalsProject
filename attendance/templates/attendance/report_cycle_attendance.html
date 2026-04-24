@@ -1,0 +1,70 @@
+{% extends "evaluations/base.html" %}
+{% load static %}
+{% load i18n %}
+{% load attendance_extras %}
+
+{% block title %} <title>Reporte asistencia</title> {% endblock %}
+{% block head %}
+{{ block.super }}
+  <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+  <style>
+
+    table th, table td {
+      padding: 0.7em 1.2em;
+    }
+
+    table thead tr {
+      background-color: #ffb97e;
+      border: none;
+    }
+
+    table {
+      border-collapse: collapse;
+    }
+
+  </style>
+{% endblock %}
+
+
+{% block body_header %}
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id='cycles-header-item' class="header-item">
+          <a href={% url 'report_attendance_cycles' %}>Ciclos</a>
+        </li>
+        <li id='report-main-header-item' class="header-item">
+          <a href={% url 'report_main' %}>Reportes</a>
+        </li>
+        <li id='report-students-header-item' class="header-item">
+          <a href="{% url 'report_attendance_students' %}">Estudiantes</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+{% endblock body_header %}
+
+
+{% block body_main %}
+  
+  <h2 class='top-title'>Asistencia {{ cycle }}</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Presente</th>
+        <th>Porcentaje</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for student, resume in report.items %}
+      <tr>
+        <td>{{ student }}</td>
+        <td>{{ resume.present }}/{{ resume.attendance }}</td>
+        <td>{{ resume.percent }}%</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock body_main %}

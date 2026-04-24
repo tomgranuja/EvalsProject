@@ -1,0 +1,51 @@
+{% extends "evaluations/base.html" %}
+{% load static %}
+{% load i18n %}
+{% load attendance_extras %}
+
+{% block title %} <title>Tipo de reporte</title> {% endblock %}
+{% block head %}
+{{ block.super }}
+  <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+
+<!--
+  <style>
+  </style>
+-->
+
+{% endblock %}
+
+
+{% block body_header %}
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id="all-teachers-header-item" class="header-item">
+          <a href="{% url 'teachers' %}">Guias</a>
+        </li>
+        <li id='calendar-header-item' class="header-item">
+          <a href={% url 'activities' %}>Calendario</a>
+        </li>
+        <li id='today-attendance-header-item' class="header-item">
+          <a href="{% url 'today_attendance' %}">Hoy</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+{% endblock body_header %}
+
+
+{% block body_main %}
+  
+  <h2 class='top-title'>Elegir grupo para reporte</h2>
+
+  <div class="vertical-links-flex">
+      <div class="vertical-link-flex-item">
+        <a href={% url 'report_attendance_cycles' %}>Buscar por ciclo</a>
+      </div>
+      <div class="vertical-link-flex-item">
+        <a href={% url 'report_attendance_students' %}>Buscar por estudiante</a>
+      </div>
+  </div>
+
+{% endblock body_main %}

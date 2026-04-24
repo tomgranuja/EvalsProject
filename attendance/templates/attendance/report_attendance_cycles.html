@@ -1,0 +1,47 @@
+{% extends "evaluations/base.html" %}
+{% load static %}
+{% load i18n %}
+{% load attendance_extras %}
+
+{% block title %} <title>Elegir Ciclo</title> {% endblock %}
+{% block head %}
+{{ block.super }}
+  <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+
+<!--
+  <style>
+  </style>
+-->
+
+{% endblock %}
+
+
+{% block body_header %}
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id='report-main-header-item' class="header-item">
+          <a href={% url 'report_main' %}>Reportes</a>
+        </li>
+        <li id='report-students-header-item' class="header-item">
+          <a href="{% url 'report_attendance_students' %}">Estudiantes</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+{% endblock body_header %}
+
+
+{% block body_main %}
+  
+  <h2 class='top-title'>Elegir ciclo del reporte</h2>
+
+  <div class="vertical-links-flex">
+    {% for cycle in cycles %}
+      <div class="vertical-link-flex-item">
+        <a href={% url 'report_cycle_attendance' cycle.pk %}>{{ cycle }}</a>
+      </div>
+    {% endfor %}
+  </div>
+
+{% endblock body_main %}
