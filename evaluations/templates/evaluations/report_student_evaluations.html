@@ -1,0 +1,242 @@
+{% extends "evaluations/base.html" %}
+{% load static %}
+{% load i18n %}
+{% load attendance_extras %}
+
+{% block title %} <title>Reporte evaluaciones</title> {% endblock %}
+{% block head %}
+{{ block.super }}
+  <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+  <style>
+  body {
+    background-color: var(--color-white);
+  }
+
+  article {
+    margin: 1em 1em 6em 2.4em;
+  }
+
+  section h3 {
+    font-size: 1.5em;
+    border-bottom: 4px solid #2fac66;
+    padding: 2em 0em 0.7em;
+  }
+
+/*=== Title styles ===*/
+  #title-flex {
+    display: flex;
+    justify-content: space-between;
+    margin: 1.2em 0em 1.7em;
+  }
+
+  #title-flex h2 {
+    font-size: 2.25em;
+  }
+
+  #title-flex h2 strong {
+    display: block;
+    font-size: 75%;
+    font-weight: inherit;
+    padding: 0.5em 0em 0em;
+  }
+
+/*=== Identification section styles ===*/
+  #identification {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    background: #e1f7e9;
+  }
+
+  .left-th-table {
+    border-collapse: collapse;
+    table-layout: fixed;
+    flex-grow: 1;
+  }
+
+  .left-th-date-table {
+    flex-grow: 4;
+  }
+
+  .left-th-table td {
+    padding: 0.85em;
+  }
+
+  .left-th-table tr :nth-child(1) {
+    background-color: #2fac66;
+    width: 8em;
+  }
+
+/*=== Resume table styles ===*/
+  #eval-resume-table {
+    border-collapse: collapse;
+/*    table-layout: fixed;
+    width: 90%;
+    margin: 10px auto;*/
+  }
+
+  #eval-resume-table th,
+  #eval-resume-table td {
+    padding: 0.3em 0.75em;
+  }
+
+  #eval-resume-table th {
+    padding-bottom: 0.8em;
+  }
+
+  #eval-resume-table tr :nth-child(1) {
+    padding-left: 0;
+  }
+
+  #eval-resume-table tr :nth-child(n+2) {
+    text-align: right;
+  }
+
+/*=== Detail table styles ===*/
+  .detail-table-container {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  .eval-detail-table {
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin: 0em 0em auto 0em;
+    width: 90%
+  }
+
+  .eval-detail-table tr {
+    border: 1px solid var(--color-gray-blue);
+  }
+
+  .eval-detail-table td {
+    padding: 5px 3em 5px 5px;
+    height: 3.5em;
+    vertical-align: top;
+  }
+
+  .eval-detail-table tr :nth-last-child(2) {
+    width: 3.5em;
+    padding-right: 1em;
+  }
+
+  </style>
+
+{% endblock %}
+
+
+{% block body_header %}
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id='students-header-item' class="header-item">
+          <a href={% url 'report_evaluations_students' %}>Estudiantes</a>
+        </li>
+        <li id='report-main-header-item' class="header-item">
+          <a href={% url 'report_main' %}>Reportes</a>
+        </li>
+        <li id='report-students-header-item' class="header-item">
+          <a href="{% url 'report_attendance_cycles' %}">Ciclos</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+{% endblock body_header %}
+
+
+{% block body_main %}
+  <article class='report-article'>
+    <div id=title-flex>
+      <h2>
+        Informe
+        <strong>Desempeño escolar</strong>
+      </h2>
+      <div class='logo-flex-item'>
+        <p>The Logo</p>
+        <p>The Logo</p>
+        <p>The Logo</p>
+      </div>
+    </div>
+    <section id='identification'>
+
+      <table class='left-th-table left-th-name-grade-table'>
+        <tbody>
+          <tr>
+            <td><strong>Nombre</strong></td> <td>{{ student.user.first_name }} {{ student.user.last_name }}</td>
+          </tr>
+          <tr>
+            <td><strong>Curso</strong></td> <td>{{ student.grade_display }} - {{ student.cycle }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table class='left-th-table left-th-date-table'>
+        <tbody>
+          {% language 'es' %}
+            <tr>
+              <td><strong>Año escolar</strong></td> <td>{{ report_date|date:"Y"  }}</td>
+            </tr>
+            <tr>
+              <td><strong>Fecha</strong></td> <td class='uppercase'>{{ report_date|date:"F" }}</td>
+            </tr>
+          {% endlanguage %}
+        </tbody>
+      </table>
+
+    </section>
+
+    <section class=eval-resume>
+      <h3>Resumen de evaluaciones</h3>
+      <table id='eval-resume-table'>
+        <thead>
+          <tr>
+            <th>Área de aprendizaje</th>
+            {% for i in max_eval_iters %}
+              <th>Ev. {{ forloop.counter}}</th>
+            {% endfor %}
+            <th>Promedio</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row_header, row in resume_table.items %}
+            <tr>
+              {% if row_header == 'final' %}
+                <td>Promedio final</td>
+                {% for item in row %}
+                  <td><strong>{{ item }}</strong></td>
+                {% endfor %}
+              {% else %}
+                <td>{{ row_header }}</td>
+                {% for item in row %}
+                  <td>{{ item }}</td>
+                {% endfor %}
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    {% for subject, eval_results in results.items %}
+      {% if eval_results|length > 0 %}
+        <section class='eval-detail'>
+          <h3>{{ subject }} <!--<span class='text-secondary'>{{ subject.teacher }}</span>--></h3>
+          <div class='detail-table-container'>
+            <table class='eval-detail-table'>
+              <tbody>
+                {% for result in eval_results %}
+                  <tr>
+                    <td>{{ result.eval_design.name }}</td>
+                    <td>{{ result.eval_design.name }}</td>
+                    <td>{{ result.score }}%</td>
+                    <td><small>{{ result.comment }}</small></td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <!--<p class=eval-description>{{ result.eval_design.description }}</p>-->
+      {% endif%}
+    {% endfor %}
+  </article>
+{% endblock body_main %}

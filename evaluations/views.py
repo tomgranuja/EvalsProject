@@ -2,9 +2,10 @@ import json
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
-from .models import Teacher, Student, Subject, SubjectStudent, EvalDesign
+from .models import Teacher, Student, Subject, SubjectStudent, EvalDesign, EvalResult
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.utils import timezone
 from .forms import SubjectStudentEnrollFormSet, SubjectStudentEditFormSet, EvalDesignForm
 
 # Bypass authentication decorators
@@ -355,6 +356,84 @@ def _subject_eval_results_table(eval_designs, students):
                 row[str(eval_design.pk)] = r.score
         table.append(row)
     return table
+
+### Quick view idea for eval report
+
+def report_evaluations_students(request):
+    return render(
+        request,
+        'evaluations/report_evaluations_students.html',
+        {
+            'students': Student.active.all().order_by('cycle'),
+        },
+    )
+
+@user_passes_test(is_teacher_or_staff)
+@login_required
+def report_student_evaluations(request, student_pk):
+    student = Student.objects.get(pk=student_pk)
+    results = _student_evaluation_results(student)
+    evaluation_max_count = max([len(evs) for s, evs in results.items()])
+    resume_table = _resume_table(results, evaluation_max_count)
+    return render(request,
+        'evaluations/report_student_evaluations.html',
+        {
+            'report_date': timezone.localdate(),
+            'student': student,
+            'results': results,
+            'max_eval_iters': range(evaluation_max_count),
+            'resume_table': resume_table,
+        })
+
+def _resume_table(results, max_evals):
+    resume_table_padding = _resume_table_padding(results, max_evals)
+    resume_table_average = _resume_table_average(results)
+    table = {
+        subject: [
+            f'{result.score}%' for result in eval_results
+        ] + resume_table_padding[subject] + [resume_table_average[subject]]
+        for subject, eval_results in results.items()
+        if len(eval_results) > 0
+    }
+    table['final'] = ['']*max_evals + [resume_table_average['final']]
+    return table
+
+def _student_evaluation_results(student):
+    results = {
+        subject: EvalResult.objects.filter(
+            subject_student__student=student,
+            eval_design__subject=subject,
+            eval_design__informed=True,
+            score__isnull=False,
+            )
+        for subject in student.subject_set.order_by('name')
+    }
+    return results
+
+def _resume_table_padding(results, length):
+    padding = {
+        subject: ['']*(length - len(r))
+        for subject, r in results.items()
+    }
+    return padding
+
+def _resume_table_average(results):
+    averages = {
+        subj: sum([r.score for r in subj_results])/len(subj_results)
+        for subj, subj_results in results.items()
+        if len(subj_results) > 0
+    }
+    formatted_averages = {
+        k:
+            f'{averages[k]:.0f}%' if k in averages
+            else ''
+        for k in results
+    }
+    if len(averages) > 0:
+        formatted_averages['final'] = f'{sum(averages.values())/len(averages):.0f}%'
+    else:
+        formatted_averages['final'] = ''
+    return formatted_averages
 
 def thanks(request):
     return render(request, 'evaluations/thanks.html')

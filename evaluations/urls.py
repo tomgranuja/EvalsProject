@@ -46,7 +46,15 @@ urlpatterns = [
          views.eval_results,
          name='eval_results'
          ),
-    path('thanks/',
+    path('report/students/',
+         views.report_evaluations_students,
+         name='report_evaluations_students'
+         ),
+    path('report/students/<int:student_pk>',
+         views.report_student_evaluations,
+         name='report_student_evaluations'
+         ),
+    path('thanks',
          views.thanks,
          name="thanks"),
     path('test_none/',
