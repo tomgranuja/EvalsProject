@@ -27,7 +27,7 @@
           <a href={% url 'teacher_dashboard' eval_design.subject.teacher.pk %}#subject-{{ eval_design.subject.pk }}-evals>Panel</a>
         </li>
         <li id="eval-design-header-item" class="header-item">
-          <a href={% url 'eval_design_edit' eval_design.subject.pk eval_design.pk %}>Diseño</a>
+          <a href={% url 'eval_design_edit' eval_design.pk %}>Diseño</a>
         </li>
         {% if user.is_authenticated %}
           <li id="logout-header-item" class="header-item">

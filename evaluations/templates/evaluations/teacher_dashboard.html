@@ -305,7 +305,7 @@
               <p class="evaluation-name"><span>&rarr;</span> {{ evaluation }}</p>
               <small class='text-secondary student-count'>{{ evaluation.user_active_subject_students | length }} estudiantes</small>
             </div>
-            <a class='eval-design-link' href="{% url 'eval_design_edit' subject.pk evaluation.pk  %}"></a>
+            <a class='eval-design-link' href="{% url 'eval_design_edit' evaluation.pk  %}"></a>
           </div>
               
             
@@ -315,7 +315,7 @@
                 <use href="{% static 'evaluations/media/icons.svg' %}#table-icon"></use>
               </svg>
             </div>
-            <a class="card-link" href="{% url 'eval_results' subject.pk evaluation.pk %}"></a>
+            <a class="card-link" href="{% url 'eval_results' evaluation.pk %}"></a>
           </div>
         {% endfor %}
         <div class="cell-span-2 btn-cell">

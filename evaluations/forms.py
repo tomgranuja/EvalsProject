@@ -18,9 +18,13 @@ SubjectStudentEditFormSet = forms.formset_factory(SubjectStudentEditForm, extra=
 class EvalDesignForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if self.instance.pk:
+            subject = self.instance.subject
+        else:
+            subject = self.initial['subject']
         self.fields['subject_students'] = EvalDesignMultipleChoiceField(
             queryset=SubjectStudent.user_active.filter(
-                subject=self.initial['subject'],
+                subject=subject,
                 active=True,
                 ).order_by('student__cycle', 'student__grade')
             )

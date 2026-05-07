@@ -192,19 +192,22 @@ def eval_design_new(request, subject_pk):
 
 @user_passes_test(is_teacher_or_staff)
 @login_required
-def eval_design_edit(request, subject_pk, eval_design_pk):
-    initial = {
-        'subject': Subject.objects.get(pk=subject_pk),
-        }
+def eval_design_edit(request, eval_design_pk):
     eval_design = EvalDesign.objects.get(pk=eval_design_pk)
+    # === Try to take out ===
+    # initial = {
+    #     'subject': Subject.objects.get(pk=subject_pk),
+    #     }
     if request.method == 'POST':
-        form = EvalDesignForm(request.POST, initial=initial, instance=eval_design)
+        # === Try to take out subject to context ===
+        # form = EvalDesignForm(request.POST, initial=initial, instance=eval_design)
+        form = EvalDesignForm(request.POST, instance=eval_design)
         if form.is_valid():
             eval_design = form.save()
             url_anchor = _back_to_subject_on_dashboard_anchor(eval_design)
             return HttpResponseRedirect(url_anchor)
     else:
-        form = EvalDesignForm(initial=initial, instance=eval_design)
+        form = EvalDesignForm(instance=eval_design)
     return render(request,
                   'evaluations/eval_design.html',
                   {'form': form,})
@@ -219,7 +222,7 @@ def _back_to_subject_on_dashboard_anchor(eval_design):
 
 @user_passes_test(is_teacher_or_staff)
 @login_required
-def eval_results(request, subject_pk, eval_design_pk):
+def eval_results(request, eval_design_pk):
     eval_design = EvalDesign.objects.get(pk=eval_design_pk)
     table_headers = ['Id', 'Estudiante', 'Nota', 'Comentario']
     initial_table = []
@@ -267,7 +270,7 @@ def eval_results(request, subject_pk, eval_design_pk):
                    'table_info': {
                        'table_headers': table_headers,
                        'data': initial_table,
-                       'fetch_url': reverse(eval_results, args=[subject_pk, eval_design_pk]),
+                       'fetch_url': reverse(eval_results, args=[eval_design_pk]),
                        },
                    })
 

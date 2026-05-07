@@ -19,11 +19,15 @@
     <nav>
       <ul id="header-flex">
         <li id="teacher-dashboard-header-item" class="header-item">
-          <a href={% url 'teacher_dashboard' form.initial.subject.teacher.pk %}#subject-{{ form.initial.subject.pk }}-evals>Panel</a>
+          {% if form.instance.pk %}
+            <a href={% url 'teacher_dashboard' form.instance.subject.teacher.pk %}#subject-{{ form.instance.subject.pk }}-evals>Panel</a>
+          {% else %}
+            <a href={% url 'teacher_dashboard' form.initial.subject.teacher.pk %}#subject-{{ form.initial.subject.pk }}-evals>Panel</a>
+          {% endif %}
         </li>
         {% if form.instance.pk %}
           <li id="eval-results-header-item" class="header-item">
-            <a href="{% url 'eval_results' form.initial.subject.pk form.instance.pk %}">Resultados</a>
+            <a href="{% url 'eval_results' form.instance.pk %}">Resultados</a>
           </li>
         {% endif %}
         {% if user.is_authenticated %}
@@ -49,10 +53,11 @@
     <h2 class="display-4 top-title">
       {% if form.instance.pk %}
         Editar evaluación
+        <small class='text-secondary'>{{ form.instance.subject }}</small>
       {% else %}
         Nueva evaluación
+        <small class='text-secondary'>{{ form.initial.subject }}</small>
       {% endif %}
-      <small class='text-secondary'>{{ form.initial.subject }}</small>
     </h2>
     {% csrf_token %}
     {{ form }}
