@@ -211,7 +211,7 @@ def activity_attendance_single_cycle(request, activity_pk, cycle_pk):
         activity,
         cycle,
         use_view=activity_attendance_single_cycle,
-        n=-1,
+        n=1,
     )
     initial = _attendance_formset_initial(activity, cycle)
     if request.method == 'POST':
