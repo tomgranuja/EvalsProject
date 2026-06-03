@@ -17,6 +17,9 @@ fixtures/
 # dotenv
 .env
 
+# pyenv python version
+.python-version
+
 # Kate editor
 *.kate-swp
 .kateproject
