@@ -51,6 +51,7 @@ if 'ALLOWED_HOSTS' in LOCAL_SETTINGS:
 INSTALLED_APPS = [
     'attendance.apps.AttendanceConfig',
     'evaluations.apps.EvaluationsConfig',
+    'stlogs.apps.StlogsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
