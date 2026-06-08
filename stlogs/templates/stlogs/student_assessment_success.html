@@ -1,0 +1,40 @@
+{% extends "evaluations/base.html" %}
+{% load static %}
+{% load i18n %}
+{% load attendance_extras %}
+
+{% block title %} <title>Registrado</title> {% endblock %}
+{% block head %}
+{{ block.super }}
+  <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block body_header %}
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id='student-assessments-header-item' class="header-item">
+          <a href={% url 'edit_assessment' student_assessment.pk %}>Editar obs.</a>
+        </li>
+        <li id='student-assessments-header-item' class="header-item">
+          <a href={% url 'student_assessments' student_assessment.student.pk %}>Otras obs.</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+{% endblock body_header %}
+
+
+{% block body_main %}
+  
+  <h2 class='top-title'>Pauta registrada</h2>
+  <p class='text-secondary'>
+    {{ student_assessment.student }} por {{ student_assessment.rubric }},
+    {% language 'es' %}
+      {{ student_assessment.start.date|date:"j \d\e F" }}
+    {% endlanguage %}
+  </p>
+  <a href={% url  'student_assessment_scores' student_assessment.pk %}>Calificar criterios</a>
+
+{% endblock body_main %}

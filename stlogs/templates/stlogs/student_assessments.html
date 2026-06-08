@@ -1,0 +1,110 @@
+{% extends "evaluations/base.html" %}
+{% load static %}
+{% load i18n %}
+{% load attendance_extras %}
+
+{% block title %} <title>Elegir estudiante</title> {% endblock %}
+{% block head %}
+{{ block.super }}
+  <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+
+  <style>
+
+    table th, table td {
+      padding: 0.7em 1.2em;
+    }
+
+    table thead tr {
+      background-color: #ffb97e;
+      border: none;
+    }
+
+    table {
+      border-collapse: collapse;
+    }
+
+/*    .cell-span-2 {
+      grid-column: span 2;
+    }
+
+    .btn-cell {
+      padding: 1rem;
+    }*/
+
+    .btn {
+      display: inline-block;
+      background-color: var(--color-blue);
+      padding: 0.5rem 1.3rem;
+      border-radius: 0.375rem;
+      text-decoration: none;
+      color: inherit;
+      font-size: 1.6rem;
+    }
+
+    .btn-green {
+      background-color: var(--color-green);
+      color: var(--color-white);
+    }
+
+  </style>
+
+{% endblock %}
+
+
+{% block body_header %}
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id="all-students-header-item" class="header-item">
+          <a href="{% url 'stlogs_students' %}">Estudiantes</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+{% endblock body_header %}
+
+
+{% block body_main %}
+  
+  <h2 class='top-title'>{{ student }}</h2>
+  
+  {% if assessments|length > 0 %}
+    <h3>Observaciones</h3>
+
+    <table>
+      <tbody>
+      {% for assessment in assessments %}
+        <tr>
+          <td><a href={% url 'edit_assessment' assessment.pk %}>
+              {{ assessment.rubric }}
+          </a></td>
+          <td><a href={% url 'student_assessment_scores' assessment.pk %}>
+              Calificar criterios
+          </a></td>
+          <td>
+            {% language 'es' %}
+              {{ assessment.start.date |date:"j \d\e F" }}
+            {% endlanguage %}
+          </td>
+          <!--<td>{{ st.cycle }}</td>-->
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>(sin observaciones)</p>
+  {% endif %}
+  <div>
+    <a class='btn btn-green btn-list-add' href="{% url 'new_student_assessment' student.pk %}"><strong>+</strong></a>
+  </div>
+  
+  {% if custom_reports|length > 0 %}
+    <h3>Informes personalizados</h3>
+    <ul>
+      {% for report in custom_reports %}
+        <li>{{ report }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+{% endblock body_main %}

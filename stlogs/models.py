@@ -1,4 +1,5 @@
 from django.db import models
+# from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from evaluations.models import Student, Subject
 
 # Create your models here.
@@ -116,6 +117,31 @@ class CriterionScore(models.Model):
                 violation_error_message='This criterion already exists in this assessment.',
             ),
         ]
+
+    def qualify_by_text_or_none(self, text):
+        # FUTURE PROOTOTYPING/ERROR MAPPING BLUEPRINT:
+        # try:
+        #     self.author = Author.objects.get(name__icontains=text_query)
+        # except Author.DoesNotExist:
+        #     # Handle 404 / API Response Mapping here
+        #     raise ObjectDoesNotExist(f"No match for '{text_query}'.")
+        # except Author.MultipleObjectsReturned:
+        #     # Handle ambiguities here (e.g., return closest match or raise 400)
+        #     raise MultipleObjectsReturned(f"Too many matches for '{text_query}'.")
+
+        if text is None or text == '':
+            self.grade_option = None
+        else:
+            try:
+                self.grade_option = self.rubric_criterion.grade_scheme.grade_options.get(quality=text)
+            except GradeOption.DoesNotExist:
+                self.grade_option = None
+
+    def get_quality_or_blank(self):
+        quality = ''
+        if self.grade_option is not None:
+            quality = self.grade_option.quality
+        return quality
 
     def __str__(self):
         return f'{self.grade_option} in {self.student_assessment}'

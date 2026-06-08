@@ -23,6 +23,7 @@ urlpatterns = [
     path('', evaluations_views.index),
     path('evaluations/', include('evaluations.urls')),
     path('attendance/', include('attendance.urls')),
+    path('stlogs/', include('stlogs.urls')),
     path('admin/', admin.site.urls),
 
     ## Authentication

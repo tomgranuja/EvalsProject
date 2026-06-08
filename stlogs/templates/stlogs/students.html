@@ -1,0 +1,65 @@
+{% extends "evaluations/base.html" %}
+{% load static %}
+{% load i18n %}
+{% load attendance_extras %}
+
+{% block title %} <title>Elegir estudiante</title> {% endblock %}
+{% block head %}
+{{ block.super }}
+  <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+
+  <style>
+
+    table th, table td {
+      padding: 0.7em 1.2em;
+    }
+
+    table thead tr {
+      background-color: #ffb97e;
+      border: none;
+    }
+
+    table {
+      border-collapse: collapse;
+    }
+
+  </style>
+
+{% endblock %}
+
+
+{% block body_header %}
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id="all-teachers-header-item" class="header-item">
+          <a href="{% url 'teachers' %}">Guias</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+{% endblock body_header %}
+
+
+{% block body_main %}
+  
+  <h2 class='top-title'>Elegir estudiante</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ESTUDIANTE</th>
+        <th>CICLO</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for st in students %}
+      <tr>
+        <td><a href={% url 'student_assessments' st.pk %}>{{ st }}</a></td>
+        <td>{{ st.cycle }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock body_main %}

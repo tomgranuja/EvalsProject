@@ -1,0 +1,74 @@
+{% extends "evaluations/base.html" %}
+{% load static %}
+
+{% block title %} <title>Observación de estudiante</title> {% endblock %}
+{% block head %}
+  {{ block.super }}
+  <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+  <style>
+    label {
+      display: block;
+      font-weight: 300;
+      font-size: 1.5rem;
+    }
+  </style>
+{% endblock head %}
+
+{% block body_header %}
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id="student-assessments-header-item" class="header-item">
+          {% if form.instance.pk %}
+            <a href={% url 'student_assessments' form.instance.student.pk %}>Observaciones</a>
+          {% else %}
+            <a href={% url 'student_assessments' form.initial.student.pk %}>Observaciones</a>
+          {% endif %}
+        </li>
+        {% if form.instance.pk %}
+          <li id="student-assessments-header-item" class="header-item">
+            <a href={% url 'student_assessment_scores' form.instance.pk %}>Criterios</a>
+          </li>
+        {% endif %}
+        {% if user.is_authenticated %}
+          <li id="logout-header-item" class="header-item">
+            <a href="#"
+              onclick='event.preventDefault();confirm("Confirmar salida. ¿Desea salir y volver a la página de login?") && document.getElementById("logout-form").submit();'>
+              Salir
+            </a>
+            <form
+              id="logout-form"
+              action="{% url 'logout' %}?next={% url 'login' %}" method="post">
+              {% csrf_token %}
+            </form>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
+{% endblock body_header %}
+
+{% block body_main %}
+
+  <form method="post">
+    <h2 class="display-4 top-title">
+      {% if form.instance.pk %}
+        Modificar observación
+        <small class='text-secondary'>{{ form.instance.student }}</small>
+      {% else %}
+        Nueva observación
+        <small class='text-secondary'>{{ form.initial.student }}</small>
+      {% endif %}
+
+    </h2>
+    {% csrf_token %}
+    {{ form }}
+    {% if form.instance.pk %}
+      <input type="submit" value="Guardar">
+    {% else %}
+      <input type="submit" value="Crear">
+    {% endif %}
+  </form>
+
+{% endblock body_main %}
+
