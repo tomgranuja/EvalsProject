@@ -2,6 +2,7 @@ import json
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required, user_passes_test
 from evaluations.models import Student
 from .models import StudentAssessment, CriterionScore
 from .forms import StudentAssessmentForm
@@ -21,6 +22,8 @@ def students(request):
         },
     )
 
+@user_passes_test(is_teacher_or_staff)
+@login_required
 def student_assessments(request, student_pk):
     student = Student.objects.get(pk=student_pk)
     assessments = StudentAssessment.objects.filter(student=student).order_by('end')
@@ -35,6 +38,8 @@ def student_assessments(request, student_pk):
         },
     )
 
+@user_passes_test(is_teacher_or_staff)
+@login_required
 def new_student_assessment(request, student_pk):
     student = Student.objects.get(pk=student_pk)
     if request.method == 'POST':
@@ -78,6 +83,8 @@ def assessments(request):
         }
     )
 
+@user_passes_test(is_teacher_or_staff)
+@login_required
 def edit_assessment(request, assessment_pk):
     assessment = StudentAssessment.objects.get(pk=assessment_pk)
     if request.method == 'POST':
@@ -100,6 +107,8 @@ def edit_assessment(request, assessment_pk):
             },
     )
 
+@user_passes_test(is_teacher_or_staff)
+@login_required
 def student_assessment_scores(request, assessment_pk):
 
     assessment = StudentAssessment.objects.get(pk=assessment_pk)
@@ -192,3 +201,4 @@ def student_assessment_scores(request, assessment_pk):
                        },
         },
     )
+

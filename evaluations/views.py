@@ -1,12 +1,14 @@
 import json
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
+from django.template import Template, RequestContext
 from django.urls import reverse
-from .models import Teacher, Student, Subject, SubjectStudent, EvalDesign, EvalResult
+from .models import Teacher, Student, Subject, SubjectStudent, EvalDesign, EvalResult, CustomReport
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils import timezone
 from .forms import SubjectStudentEnrollFormSet, SubjectStudentEditFormSet, EvalDesignForm
+from utils.view_helpers import is_teacher, is_teacher_or_staff, student_attendance_resume, student_assessment_table
 
 # Bypass authentication decorators
 # Comment out in order to use them
@@ -32,12 +34,6 @@ from .forms import SubjectStudentEnrollFormSet, SubjectStudentEditFormSet, EvalD
 
 def index(request):
     return HttpResponseRedirect(reverse(teachers))
-
-def is_teacher(user):
-    return Teacher.active.filter(user=user.pk).exists()
-
-def is_teacher_or_staff(user):
-    return is_teacher(user) or user.is_staff
 
 @login_required
 def profile(request):
@@ -434,6 +430,57 @@ def _resume_table_average(results):
     else:
         formatted_averages['final'] = ''
     return formatted_averages
+
+def custom_report_list(request):
+    return HttpResponse('<h2>Custom report list comming soon!</h2>')
+
+def custom_report_students(request, custom_report_pk):
+    return HttpResponse('<h2>Custom report students comming soon!</h2>')
+
+@user_passes_test(is_teacher_or_staff)
+@login_required
+def student_custom_report(request, student_pk, custom_report_pk):
+    student = Student.objects.get(pk=student_pk)
+    report = CustomReport.objects.get(pk=custom_report_pk)
+    results = _student_evaluation_results(student)
+    evaluation_max_count = max([len(evs) for s, evs in results.items()])
+    assessments = student.assessments.filter(**report.assessments_filter)
+
+    if report.css_content.strip():
+        css_block = f"{{% block report_css %}}{report.css_content}{{% endblock report_css %}}"
+    else:
+        css_block = ""
+    if report.html_content.strip():
+        htm_block = f"{{% block report_htm %}}{report.html_content}{{% endblock report_htm %}}"
+    else:
+        htm_block = ""
+
+    full_template = Template(f'''
+    {{% extends  "evaluations/custom_report_base.html" %}}
+    {{% load static %}}
+    {{% load i18n %}}
+    {css_block}
+    {htm_block}
+    ''')
+
+    report_data = {
+        'report_date': timezone.localdate(),
+        'student': student,
+        'results': results,
+        'max_eval_iters': range(evaluation_max_count),
+        'resume_table': _resume_table(results, evaluation_max_count),
+        'attendance_resume': student_attendance_resume(student),
+        'assessments_data': [
+            {
+                'assessment_table': student_assessment_table(a),
+                'assessment_object': a,
+                }
+            for a in assessments
+        ],
+        'custom_report': report,
+    }
+    context = RequestContext(request, report_data)
+    return HttpResponse(full_template.render(context))
 
 def thanks(request):
     return render(request, 'evaluations/thanks.html')

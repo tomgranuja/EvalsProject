@@ -144,6 +144,12 @@ if 'STATIC_ROOT' in LOCAL_SETTINGS:
 
 STATIC_URL = '/static/'
 
+# User uploaded media files (Logs, images, etc.)
+MEDIA_URL = '/media/'
+
+if 'MEDIA_ROOT' in LOCAL_SETTINGS:
+    MEDIA_ROOT = BASE_DIR / LOCAL_SETTINGS['MEDIA_ROOT']
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

@@ -6,8 +6,8 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils import timezone
 
-from evaluations.models import Cycle, Student, Teacher
-from evaluations.views import is_teacher_or_staff
+from evaluations.models import Cycle, Student
+from utils.view_helpers import is_teacher_or_staff, student_attendance_resume
 from .models import SchoolActivity, Attendance, Student
 from .forms import AttendanceFormSet, AttendanceNominaFormSet
 
@@ -319,7 +319,7 @@ def report_main(request):
 def report_cycle_attendance(request, cycle_pk):
     cycle = Cycle.objects.get(pk=cycle_pk)
     report = {
-        st: _student_attendance_resume(st)
+        st: student_attendance_resume(st)
         for st in Student.active.filter(cycle__pk=cycle_pk)
     }
     return render(
@@ -330,18 +330,6 @@ def report_cycle_attendance(request, cycle_pk):
             'report': report,
         },
     )
-
-def _student_attendance_resume(st):
-    attendance = Attendance.objects.filter(student=st)
-    present = attendance.filter(present=True)
-    attendance_count = attendance.count()
-    present_count = present.count()
-    rate =  present_count / attendance_count
-    return {
-        'present': present_count,
-        'attendance': attendance_count,
-        'percent': f'{rate*100:.0f}',
-        }
 
 def report_attendance_cycles(request):
     return render(
@@ -365,7 +353,7 @@ def report_attendance_students(request):
 @login_required
 def report_student_attendance(request, student_pk):
     student = Student.objects.get(pk=student_pk)
-    report = _student_attendance_resume(student)
+    report = student_attendance_resume(student)
     return render(
         request,
         'attendance/report_student_attendance.html',

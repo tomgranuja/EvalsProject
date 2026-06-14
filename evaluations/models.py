@@ -191,3 +191,33 @@ class EvalResult(models.Model):
                 name="unique_subject_student_eval_design"
             )
         ]
+
+class CustomReport(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    assessments_filter = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="JSON for filtering assessments to fetch."
+    )
+    evaluations_filter = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="JSON for filtering evaluations to fetch (not implemented yet)."
+    )
+    attendance_filter = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="JSON for filtering attendance to fetch (not implemented yet)."
+    )
+    css_content = models.TextField(
+        help_text="Enter raw CSS that would be wrapped in style block.",
+        blank=True
+        )
+    html_content = models.TextField(
+        help_text="Enter raw HTML that would be wrapped in an article block.",
+        blank=True
+        )
+    logo_image = models.ImageField(upload_to='logos', blank=True, null=True)
+
+    def __str__(self):
+        return self.name

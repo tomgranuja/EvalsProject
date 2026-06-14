@@ -1,12 +1,13 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Cycle, Teacher, Student, Subject, SubjectStudent, EvalDesign, EvalResult
+from .models import Cycle, Teacher, Student, Subject, SubjectStudent, EvalDesign, EvalResult, CustomReport
 
 admin.site.register(Cycle)
 admin.site.register(Teacher)
 admin.site.register(Subject)
 admin.site.register(SubjectStudent)
+admin.site.register(CustomReport)
 
 #@admin.register(Subject)
 #class SubjectAdmin(admin.ModelAdmin):
