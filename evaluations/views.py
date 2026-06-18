@@ -432,10 +432,28 @@ def _resume_table_average(results):
     return formatted_averages
 
 def custom_report_list(request):
-    return HttpResponse('<h2>Custom report list comming soon!</h2>')
+    # return HttpResponse('<h2>Custom report list comming soon!</h2>')
+    return render(
+        request,
+        'evaluations/custom_report_list.html',
+        {
+            'custom_reports': CustomReport.objects.all(),
+        },
+    )
 
 def custom_report_students(request, custom_report_pk):
-    return HttpResponse('<h2>Custom report students comming soon!</h2>')
+    custom_report = CustomReport.objects.get(pk=custom_report_pk)
+    print(f'custom_report_pk: {custom_report_pk}')
+    students = Student.active.all().order_by('cycle')
+    # return HttpResponse('<h2>Custom report students comming soon!</h2>')
+    return render(
+        request,
+        'evaluations/custom_report_students.html',
+        {
+            'custom_report': custom_report,
+            'students': students,
+        },
+    )
 
 @user_passes_test(is_teacher_or_staff)
 @login_required

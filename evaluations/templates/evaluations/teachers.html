@@ -18,6 +18,9 @@
         <li id="asistencia-header-item" class="header-item">
           <a href="{% url 'today_attendance' %}">Asistencia</a>
         </li>
+        <li id="informes-header-item" class="header-item">
+          <a href="{% url 'custom_report_list' %}">Informes</a>
+        </li>
         {% if user.is_authenticated %}
           <li id="logout-header-item" class="header-item">
             <a href="#"

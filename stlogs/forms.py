@@ -1,28 +1,7 @@
 from django import forms
 from .models import StudentAssessment
 
-CUSTOM_DATE_INPUT_ATTRS = {'type': 'date', 'class': 'form-control'}
-CUSTOM_TIME_INPUT_ATTRS = {'type': 'time', 'class': 'form-control'}
-
 class StudentAssessmentForm(forms.ModelForm):
-
-    start = forms.SplitDateTimeField(
-        required=False,
-        label="Comienzo",
-        widget=forms.SplitDateTimeWidget(
-            date_attrs=CUSTOM_DATE_INPUT_ATTRS,
-            time_attrs=CUSTOM_TIME_INPUT_ATTRS,
-        )
-    )
-
-    end = forms.SplitDateTimeField(
-        required=False,
-        label="Fin",
-        widget=forms.SplitDateTimeWidget(
-            date_attrs=CUSTOM_DATE_INPUT_ATTRS,
-            time_attrs=CUSTOM_TIME_INPUT_ATTRS,
-        )
-    )
 
     class Meta:
         model = StudentAssessment
@@ -36,6 +15,10 @@ class StudentAssessmentForm(forms.ModelForm):
             'note': 'Nota/Recordatorio',
             'feedback': 'Comentario a la familia',
         }
+        widgets = {
+            'start': forms.DateInput(attrs={'type': 'date'}),
+            'end': forms.DateInput(attrs={'type': 'date'}),
+            }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

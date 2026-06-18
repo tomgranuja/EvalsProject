@@ -102,7 +102,7 @@
     <h3>Informes personalizados</h3>
     <ul>
       {% for report in custom_reports %}
-        <li>{{ report }}</li>
+        <li><a href={% url 'student_custom_report' report.pk student.pk %}>{{ report }}</a></li>
       {% endfor %}
     </ul>
   {% endif %}

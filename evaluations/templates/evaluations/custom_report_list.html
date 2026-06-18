@@ -1,0 +1,63 @@
+{% extends "evaluations/base.html" %}
+{% load static %}
+{% load i18n %}
+{% load attendance_extras %}
+
+{% block title %} <title>Elegir formato</title> {% endblock %}
+{% block head %}
+{{ block.super }}
+  <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+
+  <style>
+
+    table th, table td {
+      padding: 0.7em 1.2em;
+    }
+
+    table thead tr {
+      background-color: #ffb97e;
+      border: none;
+    }
+
+    table {
+      border-collapse: collapse;
+    }
+
+  </style>
+
+{% endblock %}
+
+
+{% block body_header %}
+  <header>
+    <nav>
+      <ul id="header-flex">
+        <li id='teachers-header-item' class="header-item">
+          <a href={% url 'teachers' %}>Guias</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+{% endblock body_header %}
+
+
+{% block body_main %}
+
+  <h2 class='top-title'>Elegir reporte personalizado</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Formato</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for custom_report in custom_reports %}
+      <tr>
+        <td><a href={% url 'custom_report_students' custom_report.pk %}>{{ custom_report.name }}</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock body_main %}

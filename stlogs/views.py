@@ -1,11 +1,14 @@
 import json
+import datetime
+from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
-from evaluations.models import Student
+from evaluations.models import Student, CustomReport
 from .models import StudentAssessment, CriterionScore
 from .forms import StudentAssessmentForm
+from utils.view_helpers import is_teacher_or_staff
 
 # Create your views here.
 
@@ -27,7 +30,7 @@ def students(request):
 def student_assessments(request, student_pk):
     student = Student.objects.get(pk=student_pk)
     assessments = StudentAssessment.objects.filter(student=student).order_by('end')
-    custom_reports = ['dummy_custom_report']
+    custom_reports = CustomReport.objects.all()
     return render(
         request,
         'stlogs/student_assessments.html',
@@ -47,6 +50,26 @@ def new_student_assessment(request, student_pk):
         if form.is_valid():
             student_assessment = form.save(commit=False)
             student_assessment.student = student
+            if form.cleaned_data['start'] is not None:
+                form_date = form.cleaned_data['start'].date()
+                local_naive = datetime(
+                    year=form_date.year,
+                    month=form_date.month,
+                    day=form_date.day,
+                    hour=12,
+                    minute=0,
+                    )
+                student_assessment.start = timezone.make_aware(local_naive)
+            if form.cleaned_data['end'] is not None:
+                form_date = form.cleaned_data['end'].date()
+                local_naive = datetime(
+                    year=form_date.year,
+                    month=form_date.month,
+                    day=form_date.day,
+                    hour=12,
+                    minute=0,
+                    )
+                student_assessment.end = timezone.make_aware(local_naive)
             student_assessment.save()
             # Create non-qualified yet criteria scores
             for criterion in student_assessment.rubric.criteria.order_by('rank'):
