@@ -52,7 +52,7 @@ def new_student_assessment(request, student_pk):
             student_assessment.student = student
             if form.cleaned_data['start'] is not None:
                 form_date = form.cleaned_data['start'].date()
-                local_naive = datetime(
+                local_naive = datetime.datetime(
                     year=form_date.year,
                     month=form_date.month,
                     day=form_date.day,
@@ -62,7 +62,7 @@ def new_student_assessment(request, student_pk):
                 student_assessment.start = timezone.make_aware(local_naive)
             if form.cleaned_data['end'] is not None:
                 form_date = form.cleaned_data['end'].date()
-                local_naive = datetime(
+                local_naive = datetime.datetime(
                     year=form_date.year,
                     month=form_date.month,
                     day=form_date.day,
