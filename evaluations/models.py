@@ -56,6 +56,8 @@ class Student(models.Model):
         on_delete=models.CASCADE,
         )
     grade = models.SmallIntegerField('grade', blank=True, null=True)
+    bday = models.DateField(null=True, blank=True)
+    main_teachers = models.ManyToManyField(Teacher, blank=True)
 
     def has_subject_student(self, subject_pk):
         return self.subject_set.filter(pk=subject_pk).exists()
@@ -72,6 +74,22 @@ class Student(models.Model):
                 grade_str = 'I II III IV'.split()[grade-SECONDARY] + '°'
             elif grade >= PRIMARY:
                 grade_str = str(grade) + '°'
+            elif grade >= PRESCHOOL:
+                grade_str = 'prekinder kinder'.split()[grade-PRESCHOOL]
+        return grade_str
+
+    def long_grade_display(self):
+        grade = self.grade
+        PRESCHOOL = -1
+        PRIMARY   = 1
+        SECONDARY = 9
+        STOP      = 12
+        grade_str = ''
+        if self.grade is not None and self.grade <= STOP:
+            if grade >= SECONDARY:
+                grade_str = 'I II III IV'.split()[grade-SECONDARY] + '° Medio'
+            elif grade >= PRIMARY:
+                grade_str = str(grade) + '° Básico'
             elif grade >= PRESCHOOL:
                 grade_str = 'prekinder kinder'.split()[grade-PRESCHOOL]
         return grade_str

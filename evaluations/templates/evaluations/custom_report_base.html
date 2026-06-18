@@ -253,10 +253,12 @@
               <td><strong>Nombre</strong></td> <td>{{ student.user.first_name }} {{ student.user.last_name }}</td>
             </tr>
             <tr>
-              <td><strong>Nacimiento</strong></td> <td>{{ student }}</td>
+              {% language 'es' %}
+                <td><strong>Nacimiento</strong></td> <td>{{ student.bday|date:"j \d\e F \d\e Y" }}</td>
+              {% endlanguage %}
             </tr>
             <tr>
-              <td><strong>Curso</strong></td> <td>{{ student.grade_display }}</td>
+              <td><strong>Curso</strong></td> <td>{{ student.long_grade_display }}</td>
             </tr>
           </tbody>
         </table>
@@ -265,7 +267,12 @@
           <tbody>
             {% language 'es' %}
               <tr>
-                <td><strong>Guías</strong></td> <td>tutor guía 1 - tutor guía 2</td>
+                <td><strong>Guías</strong></td>
+                <td>
+                  {% for teacher in student.main_teachers.all %}
+                    {{ teacher.user.first_name }} {{ teacher.user.last_name }}{% if not forloop.last %}, {% endif %}
+                  {% endfor %}
+                </td>
               </tr>
               <tr>
                 <td><strong>Ciclo</strong></td> <td>{{ student.cycle  }}</td>
