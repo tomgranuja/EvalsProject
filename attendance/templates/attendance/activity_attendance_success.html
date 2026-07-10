@@ -7,6 +7,34 @@
 {% block head %}
 {{ block.super }}
   <link href="{% static 'evaluations/css/evaluations.css' %}" rel="stylesheet">
+
+  <style>
+
+    table th, table td {
+      padding: 0.7rem 1.2rem 0rem;
+    }
+
+    table thead tr {
+      border-bottom: 3px solid #2fac66;
+    }
+
+    table {
+      border-collapse: collapse;
+    }
+
+    .status-ok::after {
+      content: "\2713"; /* Hex without &#x and ; */
+      font-weight: 600;
+      font-size: 1.4em;
+      color: #2fac66;
+    }
+
+    .status-error {
+      color: #ff0000;
+/*       font-weight: 600; */
+    }
+
+  </style>
 {% endblock %}
 
 
@@ -49,13 +77,37 @@
     </div>
     <a class='adjacent-spinner-flex-link right-link' href="{{ next_link }}"> >> </a>
   </nav>
+
   <p class='text-secondary'>
     ({% for cycle in cycles %} {{ cycle.name }} {% endfor %})
   </p>
-  <ul>
-    {% for attendance in attendances %}
-      <li>{{ attendance.student.cycle }} {{ attendance.student  }} ---> {{ attendance.is_present_long_display }}</li>
-    {% endfor %}
-  </ul>
+
+  <p>
+    Se registraron <strong>{{ presents.count }} de {{ attendances.count }}</strong> estudiantes presentes.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Ciclo</th><th>Estudiante</th><th>Presente</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for attendance in attendances %}
+        <tr>
+          <td>{{ attendance.student.cycle }}</td>
+          <td>{{ attendance.student  }}</td>
+          <td>
+            {% if attendance.present %}
+              <span class="status-ok"></span>
+            {% else %}
+              <span class="status-error">ausente</span>
+            {% endif %}
+          </td>
+
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
 {% endblock body_main %}

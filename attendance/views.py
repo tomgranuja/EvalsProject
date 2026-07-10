@@ -179,6 +179,7 @@ def activity_attendance_all_cycles(request, activity_pk):
                     'next_link': next_activity_link,
                     'cycles': cycles,
                     'attendances': attendances,
+                    'presents': attendances.filter(present=True),
                     },
                 )
     else:
@@ -229,6 +230,7 @@ def activity_attendance_single_cycle(request, activity_pk, cycle_pk):
                     'next_link': next_activity_link,
                     'cycles': [cycle],
                     'attendances': attendances,
+                    'presents': attendances.filter(present=True),
                     },
                 )
     else:
