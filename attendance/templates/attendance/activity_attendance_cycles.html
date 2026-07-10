@@ -82,11 +82,11 @@
         {% if activity.has_started %}
           {% if warning_status %}
             <a class='status-warning' href={% url 'activity_attendance_single_cycle' activity.pk  cycle.pk %}>
-              {{ cycle }} <span class='warning'>(sin presentes)<span>
+              {{ cycle }} <span class='warning'>(sin presentes)</span>
             </a>
           {% else %}
             <a class='status-ok' href={% url 'activity_attendance_single_cycle' activity.pk  cycle.pk %}>
-              {{ cycle }} <span class='ok'><span>
+              {{ cycle }} <span class='ok'></span>
             </a>
           {% endif %}
         {% else %}
