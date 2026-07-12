@@ -1,6 +1,4 @@
 import json
-import datetime
-from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
@@ -48,29 +46,7 @@ def new_student_assessment(request, student_pk):
     if request.method == 'POST':
         form = StudentAssessmentForm(request.POST, initial={'student': student})
         if form.is_valid():
-            student_assessment = form.save(commit=False)
-            student_assessment.student = student
-            if form.cleaned_data['start'] is not None:
-                form_date = form.cleaned_data['start'].date()
-                local_naive = datetime.datetime(
-                    year=form_date.year,
-                    month=form_date.month,
-                    day=form_date.day,
-                    hour=12,
-                    minute=0,
-                    )
-                student_assessment.start = timezone.make_aware(local_naive)
-            if form.cleaned_data['end'] is not None:
-                form_date = form.cleaned_data['end'].date()
-                local_naive = datetime.datetime(
-                    year=form_date.year,
-                    month=form_date.month,
-                    day=form_date.day,
-                    hour=12,
-                    minute=0,
-                    )
-                student_assessment.end = timezone.make_aware(local_naive)
-            student_assessment.save()
+            student_assessment = form.save()
             # Create non-qualified yet criteria scores
             for criterion in student_assessment.rubric.criteria.order_by('rank'):
                 score = CriterionScore(
